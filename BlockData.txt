@@ -1,0 +1,11 @@
+-1
+test_block
+BlockModel\Cube.mv1
+
+0
+air_block
+none
+
+1
+wood_box
+BlockModel\WoodBox.mv1
