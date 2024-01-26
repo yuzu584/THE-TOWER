@@ -1,13 +1,8 @@
-﻿  Block.cpp
-  Camera.cpp
-C:\Users\student.MORIOKA\Desktop\THE TOWER\Camera.h(1,1): warning C4828: オフセット 0x23d から始まる、現在のソースの文字セット (コードページ 932) では使用できない文字がファイルに含まれています。
-C:\Users\student.MORIOKA\Desktop\THE TOWER\Input.h(1,1): warning C4828: オフセット 0x156 から始まる、現在のソースの文字セット (コードページ 932) では使用できない文字がファイルに含まれています。
-  DrawBoard.cpp
-  Input.cpp
-C:\Users\student.MORIOKA\Desktop\THE TOWER\Input.h(1,1): warning C4828: オフセット 0x156 から始まる、現在のソースの文字セット (コードページ 932) では使用できない文字がファイルに含まれています。
+﻿  Camera.cpp
+C:\Users\kayh7\Desktop\THE-TOWER\Camera.h(1,1): warning C4828: オフセット 0x23c から始まる、現在のソースの文字セット (コードページ 932) では使用できない文字がファイルに含まれています。
+C:\Users\kayh7\Desktop\THE-TOWER\Input.h(1,1): warning C4828: オフセット 0x156 から始まる、現在のソースの文字セット (コードページ 932) では使用できない文字がファイルに含まれています。
   Main.cpp
-C:\Users\student.MORIOKA\Desktop\THE TOWER\Input.h(1,1): warning C4828: オフセット 0x156 から始まる、現在のソースの文字セット (コードページ 932) では使用できない文字がファイルに含まれています。
-C:\Users\student.MORIOKA\Desktop\THE TOWER\Camera.h(1,1): warning C4828: オフセット 0x23d から始まる、現在のソースの文字セット (コードページ 932) では使用できない文字がファイルに含まれています。
-  Stage.cpp
+C:\Users\kayh7\Desktop\THE-TOWER\Input.h(1,1): warning C4828: オフセット 0x156 から始まる、現在のソースの文字セット (コードページ 932) では使用できない文字がファイルに含まれています。
+C:\Users\kayh7\Desktop\THE-TOWER\Camera.h(1,1): warning C4828: オフセット 0x23c から始まる、現在のソースの文字セット (コードページ 932) では使用できない文字がファイルに含まれています。
   コードを生成中...
-  THE TOWER.vcxproj -> C:\Users\student.MORIOKA\Desktop\THE TOWER\x64\Debug\THE TOWER.exe
+  THE TOWER.vcxproj -> C:\Users\kayh7\Desktop\THE-TOWER\x64\Debug\THE TOWER.exe

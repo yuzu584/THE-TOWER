@@ -5,10 +5,10 @@
 constexpr float CAMERA_ANGLE_SPEED = 2.0f; // カメラの視点移動速度
 constexpr VECTOR POSITION_0_90_180_270[4] = // カメラの視点ごとの座標
 {
-	{ 15.0f, 5.0f, 5.0f },
+	{ 20.0f, 5.0f, 5.0f },
 	{ 5.0f, 5.0f, -10.0f },
 	{ -10.0f, 5.0f, 5.0f },
-	{ 5.0f, 5.0f, -15.0f }
+	{ 5.0f, 5.0f, 20.0f }
 };
 
 class Camera
