@@ -38,8 +38,10 @@ public:
 	void SetDataInBlock();                                               // ブロックにデータをセット
 	void LoadBlockData();                                                // ブロックのデータを読み込む
 	void ProcessEverything(void (*func)(VECTOR pos));                    // 全てのブロックに対して処理を行う
+	void Initialize(int startDifficulty);                                // ステージの初期化
+	bool CheckPos(VECTOR pos);                                           // 指定した座標がステージの範囲内か判定
 
-	Stage(int startDifficulty);
+	Stage();
 
 	Block GetBlockPlacement(VECTOR pos); // 指定した箇所のブロックを取得
 	void InitBlockPlacement(VECTOR pos);

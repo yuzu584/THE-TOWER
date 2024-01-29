@@ -21,7 +21,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	// 背景の色を設定
 	SetBackgroundColor(128, 128, 128);
 
-	stage.SetDataInBlock(); // ブロックのデータを初期化
+	stage.Initialize(0);
 
 	// ESCキーが押されるか、ウインドウが閉じられるまでループ
 	while (ProcessMessage() == 0 && CheckHitKey(KEY_INPUT_ESCAPE) == 0)

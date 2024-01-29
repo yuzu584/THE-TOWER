@@ -178,7 +178,7 @@ void Player::Process() {
 void Player::Move(VECTOR moveVector) {
 	bool moveFlag;									// 水平方向に移動したかどうかのフラグ( false:移動していない  true:移動した )
 	bool hitFlag;									// ポリゴンに当たったかどうかを記憶しておくのに使う変数( false:当たっていない  true:当たった )
-	MV1_COLL_RESULT_POLY_DIM hitDim[9];				// プレイヤーの周囲にあるポリゴンを検出した結果が代入される当たり判定結果構造体
+	MV1_COLL_RESULT_POLY_DIM hitDim[PLAYER_CHECK_BLOCK];// プレイヤーの周囲にあるポリゴンを検出した結果が代入される当たり判定結果構造体
 	int kabeNum;									// 壁ポリゴンと判断されたポリゴンの数
 	int yukaNum;									// 床ポリゴンと判断されたポリゴンの数
 	MV1_COLL_RESULT_POLY* kabe[PLAYER_MAX_HITCOLL];	// 壁ポリゴンと判断されたポリゴンの構造体のアドレスを保存しておくためのポインタ配列
@@ -197,13 +197,27 @@ void Player::Move(VECTOR moveVector) {
 	//---------------------------------------------------------
 	// プレイヤーの周囲にあるステージポリゴンを取得する
 	// ( 検出する範囲は移動距離も考慮する )
-	for (int i = 0; i < 9; ++i) {
 
-		hitDim[i] = MV1CollCheck_Sphere(
-			stage.GetBlockPlacement(VGet(position.x, position.y, position.z)).GetModelHandle(),
-			-1,
-			player.position,
-			PLAYER_ENUM_DEFAULT_SIZE + VSize(moveVector));
+	//
+	VECTOR checkPos[PLAYER_CHECK_BLOCK] = {
+		{position},
+		{VAdd(position, VGet(0, -1, 0))},
+		{VAdd(position, VGet(0, 1, 0))},
+		{VAdd(position, VGet(0, 0, -1))},
+		{VAdd(position, VGet(0, 0, 1))},
+		{VAdd(position, VGet(-1, 0, 0))},
+		{VAdd(position, VGet(1, 0, 0))},
+	};
+
+	for (int i = 0; i < PLAYER_CHECK_BLOCK; ++i) {
+
+		if (stage.CheckPos(position)) {
+			hitDim[i] = MV1CollCheck_Sphere(
+				stage.GetBlockPlacement(checkPos[i]).GetModelHandle(),
+				-1,
+				player.position,
+				PLAYER_ENUM_DEFAULT_SIZE + VSize(moveVector));
+		}
 	}
 	//---------------------------------------------------------
 
@@ -223,7 +237,7 @@ void Player::Move(VECTOR moveVector) {
 		kabeNum = 0;
 		yukaNum = 0;
 
-		for (int i = 0; i < 9; ++i) {
+		for (int i = 0; i < PLAYER_CHECK_BLOCK; ++i) {
 			// 検出されたポリゴンの数だけ繰り返し
 			for (int j = 0; j < hitDim[i].HitNum; j++)
 			{
@@ -564,7 +578,7 @@ void Player::Move(VECTOR moveVector) {
 	MV1SetPosition(player.modelHandle, player.position);
 
 	// 検出したプレイヤーの周囲のポリゴン情報を開放する
-	for (int i = 0; i < 9; ++i) {
+	for (int i = 0; i < PLAYER_CHECK_BLOCK; ++i) {
 		MV1CollResultPolyDimTerminate(hitDim[i]);
 	}
 }

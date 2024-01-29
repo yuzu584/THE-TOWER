@@ -3,7 +3,7 @@
 
 #include <fstream>
 
-Stage stage(0);
+Stage stage;
 
 // 読み込んだブロックのデータの構造体
 LoadedBlockData loadedBlockData;
@@ -34,7 +34,7 @@ void Stage::RenderFunc(VECTOR pos) {
 
 // ブロックにデータをセット(関数ポインタで指定)
 void Stage::SetDataInBlockFunc(VECTOR pos) {
-	blockPlacement[static_cast<int>(pos.x)][static_cast<int>(pos.y)][static_cast<int>(pos.z)].SetData(rand() % BLOCK_TYPE_AMOUNT - 2);
+	blockPlacement[static_cast<int>(pos.x)][static_cast<int>(pos.y)][static_cast<int>(pos.z)].SetData(1);
 }
 
 // ブロックのデータを読み込む
@@ -94,11 +94,21 @@ void Stage::ProcessEverything(void (*func)(VECTOR pos)) {
 	}
 }
 
-// コンストラクタ
-Stage::Stage(int startDifficulty) {
-
+// ステージの初期化
+void Stage::Initialize(int startDifficulty) {
 	LoadBlockData();                        // ブロックのデータを読み込む
-	Stage::difficulty[0] = startDifficulty; // ステージ開始時の難易度を設定
+	SetDataInBlock();                       // ブロックのデータを初期化
+	difficulty[0] = startDifficulty;        // ステージ開始時の難易度を設定
+}
+
+// 指定した座標がステージの範囲内か判定
+bool Stage::CheckPos(VECTOR pos) {
+	return ((pos.x > 0) && (pos.y > 0) && (pos.z > 0) && (pos.x < STAGE_WIDTH) && (pos.y < STAGE_HEIGHT) && (pos.z < STAGE_WIDTH));
+}
+
+// コンストラクタ
+Stage::Stage() {
+
 }
 
 // 指定した箇所のブロックを取得
