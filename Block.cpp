@@ -29,9 +29,21 @@ void Block::Render(VECTOR pos) {
 	}
 }
 
+// ブロックを初期化
+void Block::Initialize() {
+
+	// 空気ブロックのデータを代入
+	SetData(0);
+
+	// モデル全体のコリジョン情報のセットアップ
+	MV1SetupCollInfo(modelHandle, -1);
+}
+
 // コンストラクタ
 Block::Block() {
-	SetData(0);
+
+	// ブロックを初期化
+	Initialize();
 }
 
 // ブロックIDを取得

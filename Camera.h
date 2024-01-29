@@ -24,6 +24,8 @@ private:
 public:
 	void Initialize(); // 初期化処理
 	void Process();    // カメラの処理
+	VECTOR GetPos() { return position; }  // カメラの座標を取得
+	VECTOR GetTarget() { return target; } // カメラのターゲット座標を取得
 
 	Camera();
 	~Camera();

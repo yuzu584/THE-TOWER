@@ -3,6 +3,8 @@
 
 #include <fstream>
 
+Stage stage(0);
+
 // 読み込んだブロックのデータの構造体
 LoadedBlockData loadedBlockData;
 
@@ -99,10 +101,9 @@ Stage::Stage(int startDifficulty) {
 	Stage::difficulty[0] = startDifficulty; // ステージ開始時の難易度を設定
 }
 
-// 指定した箇所のブロックの種類を取得
-int Stage::GetBlockPlacement(VECTOR pos) {
-	
-	return blockPlacement[static_cast<int>(pos.x)][static_cast<int>(pos.y)][static_cast<int>(pos.z)].GetId();
+// 指定した箇所のブロックを取得
+Block Stage::GetBlockPlacement(VECTOR pos) {
+	return blockPlacement[static_cast<int>(pos.x)][static_cast<int>(pos.y)][static_cast<int>(pos.z)];
 }
 
 // 指定した箇所のブロックの種類を初期化(空白ブロックにする)

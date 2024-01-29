@@ -16,6 +16,7 @@ private:
 public:
 	void SetData(int num);   // ブロックのデータを代入する
 	void Render(VECTOR pos); // ブロックのモデルを描画
+	void Initialize(); // ブロックを初期化
 
 	Block();
 
@@ -23,4 +24,5 @@ public:
 	std::string GetName();
 	int GetDirection();
 	void SetDirection(int num);
+	int GetModelHandle() { return modelHandle; } // モデルハンドルを取得
 };

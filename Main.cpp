@@ -2,6 +2,7 @@
 #include "Stage.h"
 #include "Input.h"
 #include "Camera.h"
+#include "Player.h"
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
@@ -20,7 +21,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	// 背景の色を設定
 	SetBackgroundColor(128, 128, 128);
 
-	Stage stage(0);         // ステージを宣言
 	stage.SetDataInBlock(); // ブロックのデータを初期化
 
 	// ESCキーが押されるか、ウインドウが閉じられるまでループ
@@ -34,6 +34,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 		// 入力処理
 		input.Process();
+
+		// プレイヤーの処理
+		player.Process();
 
 		// カメラの処理
 		camera.Process();

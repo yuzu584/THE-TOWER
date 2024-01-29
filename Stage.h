@@ -41,7 +41,9 @@ public:
 
 	Stage(int startDifficulty);
 
-	int GetBlockPlacement(VECTOR pos);
+	Block GetBlockPlacement(VECTOR pos); // 指定した箇所のブロックを取得
 	void InitBlockPlacement(VECTOR pos);
 	void SetBlockPlacement(VECTOR pos, int num);
 };
+
+extern Stage stage;

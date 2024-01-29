@@ -5,9 +5,9 @@ PADINPUT input; // “ü—Íî•ñ‚ğéŒ¾
 
 // “ü—Íˆ—
 void PADINPUT::Process() {
-	int old;
 
 	// 1‚Â‘O‚ÌƒtƒŒ[ƒ€‚Ì“ü—Í‚ğ•Û‘¶
+	int old;
 	old = nowInput;
 
 	// Œ»İ‚Ì“ü—Íó‘Ô‚ğæ“¾
