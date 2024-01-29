@@ -1,14 +1,17 @@
 #pragma once
 
 #include "DxLib.h"
+#include "Stage.h"
 
-constexpr float CAMERA_ANGLE_SPEED = 2.0f; // カメラの視点移動速度
-constexpr VECTOR POSITION_0_90_180_270[4] = // カメラの視点ごとの座標
+constexpr float CAMERA_ANGLE_SPEED = 2.0f;           // カメラの視点移動速度
+constexpr float CAMERA_PLAYER_HEIGHT = 5.0f;         // プレイヤーの座標からどれだけ高い位置にいるか
+constexpr float CAMERA_STAGE_DISTANCE = STAGE_WIDTH; // カメラとステージの距離
+constexpr VECTOR POSITION_0_90_180_270[4] =          // カメラの視点ごとの座標
 {
-	{ 20.0f, 5.0f, 5.0f },
-	{ 5.0f, 5.0f, -10.0f },
-	{ -10.0f, 5.0f, 5.0f },
-	{ 5.0f, 5.0f, 20.0f }
+	{ CAMERA_STAGE_DISTANCE + CAMERA_STAGE_DISTANCE - 1, 5.0f, STAGE_WIDTH_CENTER },
+	{ STAGE_WIDTH_CENTER, 5.0f, -CAMERA_STAGE_DISTANCE },
+	{ -CAMERA_STAGE_DISTANCE, 5.0f, STAGE_WIDTH_CENTER },
+	{STAGE_WIDTH_CENTER, 5.0f, CAMERA_STAGE_DISTANCE + CAMERA_STAGE_DISTANCE - 1 }
 };
 
 class Camera
@@ -19,8 +22,8 @@ private:
 	int posNum;      // 座標番号
 
 public:
-	void Initialize();           // 初期化処理
-	void Process();              // カメラの処理
+	void Initialize(); // 初期化処理
+	void Process();    // カメラの処理
 
 	Camera();
 	~Camera();

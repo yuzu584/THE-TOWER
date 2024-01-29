@@ -158,6 +158,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="BlockModel\Cube.mv1" />
+    <None Include="BlockModel\Stairs.mv1" />
     <None Include="BlockModel\WoodBox.mv1" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

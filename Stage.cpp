@@ -32,7 +32,7 @@ void Stage::RenderFunc(VECTOR pos) {
 
 // ブロックにデータをセット(関数ポインタで指定)
 void Stage::SetDataInBlockFunc(VECTOR pos) {
-	blockPlacement[static_cast<int>(pos.x)][static_cast<int>(pos.y)][static_cast<int>(pos.z)].SetData(rand() % BLOCK_TYPE_AMOUNT - 1);
+	blockPlacement[static_cast<int>(pos.x)][static_cast<int>(pos.y)][static_cast<int>(pos.z)].SetData(rand() % BLOCK_TYPE_AMOUNT - 2);
 }
 
 // ブロックのデータを読み込む
