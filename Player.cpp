@@ -204,12 +204,12 @@ void Player::Move(VECTOR moveVector) {
 	//
 	VECTOR checkPos[PLAYER_CHECK_BLOCK] = {
 		{position},
-		{VAdd(position, VGet(0, -1, 0))},
-		{VAdd(position, VGet(0, 1, 0))},
-		{VAdd(position, VGet(0, 0, -1))},
-		{VAdd(position, VGet(0, 0, 1))},
-		{VAdd(position, VGet(-1, 0, 0))},
-		{VAdd(position, VGet(1, 0, 0))},
+		{VAdd(nowPos, VGet(0, -1, 0))},
+		{VAdd(nowPos, VGet(0, 1, 0))},
+		{VAdd(nowPos, VGet(0, 0, -1))},
+		{VAdd(nowPos, VGet(0, 0, 1))},
+		{VAdd(nowPos, VGet(-1, 0, 0))},
+		{VAdd(nowPos, VGet(1, 0, 0))},
 	};
 
 	for (int i = 0; i < PLAYER_CHECK_BLOCK; ++i) {
@@ -225,8 +225,8 @@ void Player::Move(VECTOR moveVector) {
 	}
 	//---------------------------------------------------------
 
-	// x軸かy軸方向に 0.01f 以上移動した場合は「移動した」フラグを１にする
-	if (fabs(moveVector.x) > 0.01f || fabs(moveVector.z) > 0.01f)
+	// x軸かy軸方向に 0.001f 以上移動した場合は「移動した」フラグを１にする
+	if (fabs(moveVector.x) > 0.001f || fabs(moveVector.z) > 0.001f)
 	{
 		moveFlag = true;
 	}
@@ -250,10 +250,10 @@ void Player::Move(VECTOR moveVector) {
 					// ＸＺ平面に垂直かどうかはポリゴンの法線のＹ成分が０に限りなく近いかどうかで判断する
 					if (hitDim[i].Dim[j].Normal.y < 0.000001f && hitDim[i].Dim[j].Normal.y > -0.000001f)
 					{
-						// 壁ポリゴンと判断された場合でも、プレイヤーのＹ座標＋１．０ｆより高いポリゴンのみ当たり判定を行う
-						if (hitDim[i].Dim[j].Position[0].y > position.y + 1.0f ||
-							hitDim[i].Dim[j].Position[1].y > position.y + 1.0f ||
-							hitDim[i].Dim[j].Position[2].y > position.y + 1.0f)
+						// 壁ポリゴンと判断された場合でも、プレイヤーのＹ座標＋０．1ｆより高いポリゴンのみ当たり判定を行う
+						if (hitDim[i].Dim[j].Position[0].y > position.y + 0.1f ||
+							hitDim[i].Dim[j].Position[1].y > position.y + 0.1f ||
+							hitDim[i].Dim[j].Position[2].y > position.y + 0.1f)
 						{
 							// ポリゴンの数が列挙できる限界数に達していなかったらポリゴンを配列に追加
 							if (kabeNum < PLAYER_MAX_HITCOLL)

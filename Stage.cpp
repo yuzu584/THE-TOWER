@@ -103,7 +103,7 @@ void Stage::Initialize(int startDifficulty) {
 
 // 指定した座標がステージの範囲内か判定
 bool Stage::CheckPos(VECTOR pos) {
-	return ((pos.x > 0) && (pos.y > 0) && (pos.z > 0) && (pos.x < STAGE_WIDTH - 1) && (pos.y < STAGE_HEIGHT - 1) && (pos.z < STAGE_WIDTH - 1));
+	return ((pos.x >= 0) && (pos.y >= 0) && (pos.z >= 0) && (pos.x <= STAGE_WIDTH - 1) && (pos.y <= STAGE_HEIGHT - 1) && (pos.z <= STAGE_WIDTH - 1));
 }
 
 // コンストラクタ
