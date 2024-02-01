@@ -4,16 +4,16 @@
 #include "Stage.h"
 #include <math.h>
 
-Player player;
+Player* player;
 
 // プレイヤーの初期化
 void Player::Initialize() {
 
 	// 座標を設定
-	position = VGet(0.0f, 0.0f, 0.0f);
+	position = VGet(1.0f, 1.0f, 1.0f);
 
 	// 向く方向を設定
-	targetDirection = VGet(0.0f, 0.0f, 1.0f);
+	targetDirection = VGet(1.0f, 0.0f, 0.0f);
 
 	// 向きを設定
 	angle = 0.0f;
@@ -23,6 +23,9 @@ void Player::Initialize() {
 
 	// モデルの読み込み
 	modelHandle = MV1LoadModel("BlockModel/WoodBox.mv1");
+
+	// モデルのスケールを設定
+	MV1SetScale(modelHandle, PLAYER_SCALE);
 }
 
 // プレイヤーの処理
@@ -110,58 +113,58 @@ void Player::Process() {
 	}
 
 	// プレイヤーの状態が「ジャンプ」ではなく、且つボタン１が押されていたらジャンプする
-	if (player.state != AnimeState::Jump && (input.GetEdgeInput() & PAD_INPUT_A))
+	if (state != AnimeState::Jump && (input.GetEdgeInput() & PAD_INPUT_A))
 	{
 		// 状態を「ジャンプ」にする
-		player.state = AnimeState::Jump;
+		state = AnimeState::Jump;
 
 		// Ｙ軸方向の速度をセット
-		player.speed_y = PLAYER_JUMP_POWER;
+		speed_y = PLAYER_JUMP_POWER;
 
 		// ジャンプアニメーションの再生
-		//Player_PlayAnim(player.state);
+		//Player_PlayAnim(state);
 	}
 
 	// 移動ボタンが押されたかどうかで処理を分岐
 	if (moveFlag)
 	{
 		// 移動ベクトルを正規化したものをプレイヤーが向くべき方向として保存
-		player.targetDirection = VNorm(moveVector);
+		targetDirection = VNorm(moveVector);
 
 		// プレイヤーが向くべき方向ベクトルをプレイヤーのスピード倍したものを移動ベクトルとする
-		moveVector = VScale(player.targetDirection, PLAYER_MOVE_SPEED);
+		moveVector = VScale(targetDirection, PLAYER_MOVE_SPEED);
 
 		// もし今まで「立ち止まり」状態だったら
-		if (player.state == AnimeState::Neutral)
+		if (state == AnimeState::Neutral)
 		{
 			// 状態を「走り」にする
-			player.state = AnimeState::Run;
+			state = AnimeState::Run;
 
 			// 走りアニメーションを再生する
-			//Player_PlayAnim(player.state);
+			//Player_PlayAnim(state);
 		}
 	}
 	else
 	{
 		// このフレームで移動していなくて、且つ状態が「走り」だったら
-		if (player.state == AnimeState::Run)
+		if (state == AnimeState::Run)
 		{
 			// 状態を「立ち止り」にする
-			player.state = AnimeState::Neutral;
+			state = AnimeState::Neutral;
 
 			// 立ち止りアニメーションを再生する
-			//Player_PlayAnim(player.state);
+			//Player_PlayAnim(state);
 		}
 	}
 
 	// 状態が「ジャンプ」の場合は
-	if (player.state == AnimeState::Jump)
+	if (state == AnimeState::Jump)
 	{
 		// Ｙ軸方向の速度を重力分減算する
-		player.speed_y -= PLAYER_GRAVITY;
+		speed_y -= PLAYER_GRAVITY;
 
 		// 移動ベクトルのＹ成分をＹ軸方向の速度にする
-		moveVector.y = player.speed_y;
+		moveVector.y = speed_y;
 	}
 
 	// プレイヤーの移動方向にモデルの方向を近づける
@@ -189,10 +192,10 @@ void Player::Move(VECTOR moveVector) {
 	VECTOR nowPos;									// 移動後の座標
 
 	// 移動前の座標を保存
-	oldPos = player.position;
+	oldPos = position;
 
 	// 移動後の座標を算出
-	nowPos = VAdd(player.position, moveVector);
+	nowPos = VAdd(position, moveVector);
 
 	//---------------------------------------------------------
 	// プレイヤーの周囲にあるステージポリゴンを取得する
@@ -215,9 +218,10 @@ void Player::Move(VECTOR moveVector) {
 			hitDim[i] = MV1CollCheck_Sphere(
 				stage.GetBlockPlacement(checkPos[i]).GetModelHandle(),
 				-1,
-				player.position,
+				position,
 				PLAYER_ENUM_DEFAULT_SIZE + VSize(moveVector));
 		}
+		else hitDim[i].Dim = NULL;
 	}
 	//---------------------------------------------------------
 
@@ -241,35 +245,38 @@ void Player::Move(VECTOR moveVector) {
 			// 検出されたポリゴンの数だけ繰り返し
 			for (int j = 0; j < hitDim[i].HitNum; j++)
 			{
-				// ＸＺ平面に垂直かどうかはポリゴンの法線のＹ成分が０に限りなく近いかどうかで判断する
-				if (hitDim[i].Dim[j].Normal.y < 0.000001f && hitDim[i].Dim[j].Normal.y > -0.000001f)
-				{
-					// 壁ポリゴンと判断された場合でも、プレイヤーのＹ座標＋１．０ｆより高いポリゴンのみ当たり判定を行う
-					if (hitDim[i].Dim[j].Position[0].y > player.position.y + 1.0f ||
-						hitDim[i].Dim[j].Position[1].y > player.position.y + 1.0f ||
-						hitDim[i].Dim[j].Position[2].y > player.position.y + 1.0f)
-					{
-						// ポリゴンの数が列挙できる限界数に達していなかったらポリゴンを配列に追加
-						if (kabeNum < PLAYER_MAX_HITCOLL)
-						{
-							// ポリゴンの構造体のアドレスを壁ポリゴンポインタ配列に保存する
-							kabe[kabeNum] = &hitDim[i].Dim[j];
+				if (hitDim[i].Dim != NULL) {
 
-							// 壁ポリゴンの数を加算する
-							kabeNum++;
+					// ＸＺ平面に垂直かどうかはポリゴンの法線のＹ成分が０に限りなく近いかどうかで判断する
+					if (hitDim[i].Dim[j].Normal.y < 0.000001f && hitDim[i].Dim[j].Normal.y > -0.000001f)
+					{
+						// 壁ポリゴンと判断された場合でも、プレイヤーのＹ座標＋１．０ｆより高いポリゴンのみ当たり判定を行う
+						if (hitDim[i].Dim[j].Position[0].y > position.y + 1.0f ||
+							hitDim[i].Dim[j].Position[1].y > position.y + 1.0f ||
+							hitDim[i].Dim[j].Position[2].y > position.y + 1.0f)
+						{
+							// ポリゴンの数が列挙できる限界数に達していなかったらポリゴンを配列に追加
+							if (kabeNum < PLAYER_MAX_HITCOLL)
+							{
+								// ポリゴンの構造体のアドレスを壁ポリゴンポインタ配列に保存する
+								kabe[kabeNum] = &hitDim[i].Dim[j];
+
+								// 壁ポリゴンの数を加算する
+								kabeNum++;
+							}
 						}
 					}
-				}
-				else
-				{
-					// ポリゴンの数が列挙できる限界数に達していなかったらポリゴンを配列に追加
-					if (yukaNum < PLAYER_MAX_HITCOLL)
+					else
 					{
-						// ポリゴンの構造体のアドレスを床ポリゴンポインタ配列に保存する
-						yuka[yukaNum] = &hitDim[i].Dim[j];
+						// ポリゴンの数が列挙できる限界数に達していなかったらポリゴンを配列に追加
+						if (yukaNum < PLAYER_MAX_HITCOLL)
+						{
+							// ポリゴンの構造体のアドレスを床ポリゴンポインタ配列に保存する
+							yuka[yukaNum] = &hitDim[i].Dim[j];
 
-						// 床ポリゴンの数を加算する
-						yukaNum++;
+							// 床ポリゴンの数を加算する
+							yukaNum++;
+						}
 					}
 				}
 			}
@@ -417,7 +424,7 @@ void Player::Move(VECTOR moveVector) {
 	if (yukaNum != 0)
 	{
 		// ジャンプ中且つ上昇中の場合は処理を分岐
-		if (player.state == AnimeState::Jump && player.speed_y > 0.0f)
+		if (state == AnimeState::Jump && speed_y > 0.0f)
 		{
 			float MinY;
 
@@ -471,7 +478,7 @@ void Player::Move(VECTOR moveVector) {
 				nowPos.y = MinY - PLAYER_HIT_HEIGHT;
 
 				// Ｙ軸方向の速度は反転
-				player.speed_y = -player.speed_y;
+				speed_y = -speed_y;
 			}
 		}
 		else
@@ -492,15 +499,15 @@ void Player::Move(VECTOR moveVector) {
 				poly = yuka[i];
 
 				// ジャンプ中かどうかで処理を分岐
-				if (player.state == AnimeState::Jump)
+				if (state == AnimeState::Jump)
 				{
 					// ジャンプ中の場合は頭の先から足先より少し低い位置の間で当たっているかを判定
-					lineRes = HitCheck_Line_Triangle(VAdd(nowPos, VGet(0.0f, PLAYER_HIT_HEIGHT, 0.0f)), VAdd(nowPos, VGet(0.0f, -1.0f, 0.0f)), poly->Position[0], poly->Position[1], poly->Position[2]);
+					lineRes = HitCheck_Line_Triangle(VAdd(nowPos, VGet(0.0f, PLAYER_HIT_HEIGHT, 0.0f)), VAdd(nowPos, VGet(0.0f, -0.1f, 0.0f)), poly->Position[0], poly->Position[1], poly->Position[2]);
 				}
 				else
 				{
 					// 走っている場合は頭の先からそこそこ低い位置の間で当たっているかを判定( 傾斜で落下状態に移行してしまわない為 )
-					lineRes = HitCheck_Line_Triangle(VAdd(nowPos, VGet(0.0f, PLAYER_HIT_HEIGHT, 0.0f)), VAdd(nowPos, VGet(0.0f, -40.0f, 0.0f)), poly->Position[0], poly->Position[1], poly->Position[2]);
+					lineRes = HitCheck_Line_Triangle(VAdd(nowPos, VGet(0.0f, PLAYER_HIT_HEIGHT, 0.0f)), VAdd(nowPos, VGet(0.0f, -0.3f, 0.0f)), poly->Position[0], poly->Position[1], poly->Position[2]);
 				}
 
 				// 当たっていなかったら何もしない
@@ -531,38 +538,38 @@ void Player::Move(VECTOR moveVector) {
 				nowPos.y = MaxY;
 
 				// Ｙ軸方向の移動速度は０に
-				player.speed_y = 0.0f;
+				speed_y = 0.0f;
 
 				// もしジャンプ中だった場合は着地状態にする
-				if (player.state == AnimeState::Jump)
+				if (state == AnimeState::Jump)
 				{
 					// 移動していたかどうかで着地後の状態と再生するアニメーションを分岐する
 					if (moveFlag)
 					{
 						// 移動している場合は走り状態に
-						player.state = AnimeState::Run;
+						state = AnimeState::Run;
 					}
 					else
 					{
 						// 移動していない場合は立ち止り状態に
-						player.state = AnimeState::Neutral;
+						state = AnimeState::Neutral;
 					}
-					//Player_PlayAnim(player.state);
+					//Player_PlayAnim(state);
 
 					// 着地時はアニメーションのブレンドは行わない
-					//player.animBlendRate = 1.0f;
+					//animBlendRate = 1.0f;
 				}
 			}
 			else
 			{
 				// 床コリジョンに当たっていなくて且つジャンプ状態ではなかった場合は
-				if (player.state != AnimeState::Jump)
+				if (state != AnimeState::Jump)
 				{
 					// ジャンプ中にする
-					player.state = AnimeState::Jump;
+					state = AnimeState::Jump;
 
 					// ちょっとだけジャンプする
-					//player.jumpPower = CHARA_FALL_UP_POWER;
+					speed_y = PLAYER_FALL_UP__POWER;
 
 					// アニメーションを再生
 					//Player_PlayAnim(AnimeState::Jump);
@@ -572,20 +579,70 @@ void Player::Move(VECTOR moveVector) {
 	}
 
 	// 新しい座標を保存する
-	player.position = nowPos;
+	position = nowPos;
 
 	// プレイヤーのモデルの座標を更新する
-	MV1SetPosition(player.modelHandle, player.position);
+	MV1SetPosition(modelHandle, position);
 
 	// 検出したプレイヤーの周囲のポリゴン情報を開放する
 	for (int i = 0; i < PLAYER_CHECK_BLOCK; ++i) {
 		MV1CollResultPolyDimTerminate(hitDim[i]);
 	}
+
+	// プレイヤーの座標を表示
+	DrawFormatString(0, 0, GetColor(255, 255, 255), "x = %.3f", position.x);
+	DrawFormatString(0, 15, GetColor(255, 255, 255), "y = %.3f", position.y);
+	DrawFormatString(0, 30, GetColor(255, 255, 255), "z = %.3f", position.z);
 }
 
 // プレイヤーの向きを変える処理
 void Player::AngleProcess() {
+	float targetAngle;			// 目標角度
+	float saAngle;				// 目標角度と現在の角度との差
 
+	// 目標の方向ベクトルから角度値を算出する
+	targetAngle = atan2f(targetDirection.x, targetDirection.z);
+
+	// 目標の角度と現在の角度との差を割り出す
+	{
+		// 最初は単純に引き算
+		saAngle = targetAngle - angle;
+
+		// ある方向からある方向の差が１８０度以上になることは無いので
+		// 差の値が１８０度以上になっていたら修正する
+		if (saAngle < -DX_PI_F)
+		{
+			saAngle += DX_TWO_PI_F;
+		}
+		else if (saAngle > DX_PI_F)
+		{
+			saAngle -= DX_TWO_PI_F;
+		}
+	}
+
+	// 角度の差が０に近づける
+	if (saAngle > 0.0f)
+	{
+		// 差がプラスの場合は引く
+		saAngle -= PLAYER_ANGLE_SPEED;
+		if (saAngle < 0.0f)
+		{
+			saAngle = 0.0f;
+		}
+	}
+	else
+	{
+		// 差がマイナスの場合は足す
+		saAngle += PLAYER_ANGLE_SPEED;
+		if (saAngle > 0.0f)
+		{
+			saAngle = 0.0f;
+		}
+	}
+
+	// モデルの角度を更新
+	angle = targetAngle - saAngle;
+	MV1SetRotationXYZ(modelHandle, VGet(0.0f, angle + DX_PI_F, 0.0f));
 }
 
 // プレイヤーのアニメーション処理

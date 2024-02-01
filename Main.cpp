@@ -21,6 +21,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	// 背景の色を設定
 	SetBackgroundColor(128, 128, 128);
 
+	player = new Player();
+
 	stage.Initialize(0);
 
 	// ESCキーが押されるか、ウインドウが閉じられるまでループ
@@ -36,13 +38,17 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		input.Process();
 
 		// プレイヤーの処理
-		player.Process();
+		player->Process();
 
 		// カメラの処理
 		camera.Process();
 
 		// ステージを描画
 		stage.Render();
+
+		// プレイヤーモデルの描画
+		int m = player->GetModelHandle();
+		MV1DrawModel(m);
 
 		// 裏画面の内容を表画面に反映
 		ScreenFlip();
