@@ -10,7 +10,7 @@ Player* player;
 void Player::Initialize() {
 
 	// 座標を設定
-	position = VGet(1.0f, 1.0f, 1.0f);
+	position = VGet(5.0f, 1.0f, 5.0f);
 
 	// 向く方向を設定
 	targetDirection = VGet(1.0f, 0.0f, 0.0f);
@@ -182,6 +182,7 @@ void Player::Move(VECTOR moveVector) {
 	bool moveFlag;									// 水平方向に移動したかどうかのフラグ( false:移動していない  true:移動した )
 	bool hitFlag;									// ポリゴンに当たったかどうかを記憶しておくのに使う変数( false:当たっていない  true:当たった )
 	MV1_COLL_RESULT_POLY_DIM hitDim[PLAYER_CHECK_BLOCK];// プレイヤーの周囲にあるポリゴンを検出した結果が代入される当たり判定結果構造体
+	int hitDimNum = 0;                              // hitDimの有効な配列要素数
 	int kabeNum;									// 壁ポリゴンと判断されたポリゴンの数
 	int yukaNum;									// 床ポリゴンと判断されたポリゴンの数
 	MV1_COLL_RESULT_POLY* kabe[PLAYER_MAX_HITCOLL];	// 壁ポリゴンと判断されたポリゴンの構造体のアドレスを保存しておくためのポインタ配列
@@ -198,23 +199,23 @@ void Player::Move(VECTOR moveVector) {
 	nowPos = VAdd(position, moveVector);
 
 	//---------------------------------------------------------
-	// プレイヤーの周囲にあるステージポリゴンを取得する
+	// プレイヤーの周囲にあるポリゴンを取得する
 	// ( 検出する範囲は移動距離も考慮する )
 
 	//
 	VECTOR checkPos[PLAYER_CHECK_BLOCK] = {
 		{position},
-		{VAdd(nowPos, VGet(0, -1, 0))},
-		{VAdd(nowPos, VGet(0, 1, 0))},
-		{VAdd(nowPos, VGet(0, 0, -1))},
-		{VAdd(nowPos, VGet(0, 0, 1))},
-		{VAdd(nowPos, VGet(-1, 0, 0))},
-		{VAdd(nowPos, VGet(1, 0, 0))},
+		{VAdd(position, VGet(0, -1, 0))},
+		{VAdd(position, VGet(0, 1, 0))},
+		{VAdd(position, VGet(0, 0, -1))},
+		{VAdd(position, VGet(0, 0, 1))},
+		{VAdd(position, VGet(-1, 0, 0))},
+		{VAdd(position, VGet(1, 0, 0))},
 	};
 
 	for (int i = 0; i < PLAYER_CHECK_BLOCK; ++i) {
 
-		if (stage.CheckPos(position)) {
+		if (stage.CheckPos(checkPos[i])) {
 			hitDim[i] = MV1CollCheck_Sphere(
 				stage.GetBlockPlacement(checkPos[i]).GetModelHandle(),
 				-1,
@@ -223,6 +224,10 @@ void Player::Move(VECTOR moveVector) {
 		}
 		else hitDim[i].Dim = NULL;
 	}
+
+	// HitDim の有効な数はコリジョンブロックの数
+	hitDimNum = PLAYER_CHECK_BLOCK;
+
 	//---------------------------------------------------------
 
 	// x軸かy軸方向に 0.001f 以上移動した場合は「移動した」フラグを１にする
@@ -241,8 +246,9 @@ void Player::Move(VECTOR moveVector) {
 		kabeNum = 0;
 		yukaNum = 0;
 
-		for (int i = 0; i < PLAYER_CHECK_BLOCK; ++i) {
-			// 検出されたポリゴンの数だけ繰り返し
+		// 検出されたポリゴンの数だけ繰り返し
+		for (int i = 0; i < hitDimNum; ++i)
+		{
 			for (int j = 0; j < hitDim[i].HitNum; j++)
 			{
 				if (hitDim[i].Dim != NULL) {
@@ -250,10 +256,10 @@ void Player::Move(VECTOR moveVector) {
 					// ＸＺ平面に垂直かどうかはポリゴンの法線のＹ成分が０に限りなく近いかどうかで判断する
 					if (hitDim[i].Dim[j].Normal.y < 0.000001f && hitDim[i].Dim[j].Normal.y > -0.000001f)
 					{
-						// 壁ポリゴンと判断された場合でも、プレイヤーのＹ座標＋０．1ｆより高いポリゴンのみ当たり判定を行う
-						if (hitDim[i].Dim[j].Position[0].y > position.y + 0.1f ||
-							hitDim[i].Dim[j].Position[1].y > position.y + 0.1f ||
-							hitDim[i].Dim[j].Position[2].y > position.y + 0.1f)
+						// 壁ポリゴンと判断された場合でも、プレイヤーのＹ座標＋０．０1ｆより高いポリゴンのみ当たり判定を行う
+						if (hitDim[i].Dim[j].Position[0].y > position.y + 0.01f ||
+							hitDim[i].Dim[j].Position[1].y > position.y + 0.01f ||
+							hitDim[i].Dim[j].Position[2].y > position.y + 0.01f)
 						{
 							// ポリゴンの数が列挙できる限界数に達していなかったらポリゴンを配列に追加
 							if (kabeNum < PLAYER_MAX_HITCOLL)
@@ -502,12 +508,12 @@ void Player::Move(VECTOR moveVector) {
 				if (state == AnimeState::Jump)
 				{
 					// ジャンプ中の場合は頭の先から足先より少し低い位置の間で当たっているかを判定
-					lineRes = HitCheck_Line_Triangle(VAdd(nowPos, VGet(0.0f, PLAYER_HIT_HEIGHT, 0.0f)), VAdd(nowPos, VGet(0.0f, -0.1f, 0.0f)), poly->Position[0], poly->Position[1], poly->Position[2]);
+					lineRes = HitCheck_Line_Triangle(VAdd(nowPos, VGet(0.0f, PLAYER_HIT_HEIGHT, 0.0f)), VAdd(nowPos, VGet(0.0f, (-PLAYER_HIT_HEIGHT - 0.01f), 0.0f)), poly->Position[0], poly->Position[1], poly->Position[2]);
 				}
 				else
 				{
 					// 走っている場合は頭の先からそこそこ低い位置の間で当たっているかを判定( 傾斜で落下状態に移行してしまわない為 )
-					lineRes = HitCheck_Line_Triangle(VAdd(nowPos, VGet(0.0f, PLAYER_HIT_HEIGHT, 0.0f)), VAdd(nowPos, VGet(0.0f, -0.3f, 0.0f)), poly->Position[0], poly->Position[1], poly->Position[2]);
+					lineRes = HitCheck_Line_Triangle(VAdd(nowPos, VGet(0.0f, PLAYER_HIT_HEIGHT, 0.0f)), VAdd(nowPos, VGet(0.0f, (-PLAYER_HIT_HEIGHT - 0.03f), 0.0f)), poly->Position[0], poly->Position[1], poly->Position[2]);
 				}
 
 				// 当たっていなかったら何もしない
@@ -535,7 +541,7 @@ void Player::Move(VECTOR moveVector) {
 				// 当たった場合
 
 				// 接触したポリゴンで一番高いＹ座標をプレイヤーのＹ座標にする
-				nowPos.y = MaxY;
+				nowPos.y = MaxY + PLAYER_HIT_HEIGHT;
 
 				// Ｙ軸方向の移動速度は０に
 				speed_y = 0.0f;

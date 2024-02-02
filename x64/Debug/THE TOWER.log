@@ -1,4 +1,4 @@
 ﻿  Player.cpp
-C:\Users\student.MORIOKA\Desktop\THE TOWER\Camera.h(1,1): warning C4828: オフセット 0x43a から始まる、現在のソースの文字セット (コードページ 932) では使用できない文字がファイルに含まれています。
+C:\Users\student.MORIOKA\Desktop\THE TOWER\Camera.h(1,1): warning C4828: オフセット 0x416 から始まる、現在のソースの文字セット (コードページ 932) では使用できない文字がファイルに含まれています。
 C:\Users\student.MORIOKA\Desktop\THE TOWER\Input.h(1,1): warning C4828: オフセット 0x1b1 から始まる、現在のソースの文字セット (コードページ 932) では使用できない文字がファイルに含まれています。
   THE TOWER.vcxproj -> C:\Users\student.MORIOKA\Desktop\THE TOWER\x64\Debug\THE TOWER.exe

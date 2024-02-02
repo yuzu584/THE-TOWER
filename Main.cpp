@@ -19,7 +19,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	SetCameraNearFar(0.1f, 300.0f);
 
 	// 背景の色を設定
-	SetBackgroundColor(128, 128, 128);
+	SetBackgroundColor(0, 0, 0);
 
 	player = new Player();
 
@@ -59,6 +59,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		{
 		}
 	}
+
+	delete player;
 
 	// ライブラリの後始末
 	DxLib_End();

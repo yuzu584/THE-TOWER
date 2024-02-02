@@ -34,7 +34,7 @@ void Stage::RenderFunc(VECTOR pos) {
 
 // ブロックにデータをセット(関数ポインタで指定)
 void Stage::SetDataInBlockFunc(VECTOR pos) {
-	blockPlacement[static_cast<int>(pos.x)][static_cast<int>(pos.y)][static_cast<int>(pos.z)].SetData(pos.y < 1 ? 1 : 0);
+	blockPlacement[static_cast<int>(pos.x)][static_cast<int>(pos.y)][static_cast<int>(pos.z)].SetData(pos.y < 1 ? static_cast<int>(pos.x) % 2 == 1 ? -1 : 1 : 0);
 }
 
 // ブロックのデータを読み込む
@@ -113,7 +113,7 @@ Stage::Stage() {
 
 // 指定した箇所のブロックを取得
 Block Stage::GetBlockPlacement(VECTOR pos) {
-	return blockPlacement[static_cast<int>(pos.x)][static_cast<int>(pos.y)][static_cast<int>(pos.z)];
+	return blockPlacement[static_cast<int>(round(pos.x))][static_cast<int>(round(pos.y))][static_cast<int>(round(pos.z))];
 }
 
 // 指定した箇所のブロックの種類を初期化(空白ブロックにする)
