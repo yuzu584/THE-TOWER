@@ -25,9 +25,9 @@ struct LoadedBlockData
 
 extern LoadedBlockData loadedBlockData;
 
-class Stage {
+class STAGE {
 private:
-	static Block blockPlacement[STAGE_WIDTH][STAGE_HEIGHT][STAGE_WIDTH]; // ブロックの配置
+	static BLOCK blockPlacement[STAGE_WIDTH][STAGE_HEIGHT][STAGE_WIDTH]; // ブロックの配置
 	int difficulty[STAGE_HEIGHT / STAGE_DIFFICULTY_SPACE];               // ステージの難易度
 	void (*func)(VECTOR);                                                // 戻り値のない関数ポインタの定義
 	static void RenderFunc(VECTOR pos);                                  // ステージの描画(関数ポインタで指定)
@@ -41,11 +41,11 @@ public:
 	void Initialize(int startDifficulty);                                // ステージの初期化
 	bool CheckPos(VECTOR pos);                                           // 指定した座標がステージの範囲内か判定
 
-	Stage();
+	STAGE();
 
-	Block GetBlockPlacement(VECTOR pos); // 指定した箇所のブロックを取得
+	BLOCK GetBlockPlacement(VECTOR pos); // 指定した箇所のブロックを取得
 	void InitBlockPlacement(VECTOR pos);
 	void SetBlockPlacement(VECTOR pos, int num);
 };
 
-extern Stage stage;
+extern STAGE stage;

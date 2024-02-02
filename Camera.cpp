@@ -3,16 +3,16 @@
 
 #include <math.h>
 
-Camera camera; // カメラを宣言
+CAMERA camera; // カメラを宣言
 
 // 初期化処理
-void Camera::Initialize() {
+void CAMERA::Initialize() {
 	position = POSITION_0_90_180_270[1]; // 座標を設定
 	target = VGet(STAGE_WIDTH_CENTER, 0.0f, STAGE_WIDTH_CENTER); // 注視点を設定
 }
 
 // カメラの処理
-void Camera::Process() {
+void CAMERA::Process() {
 
 	// 「←」ボタンが押されていた時の処理
 	if (input.GetNowInput() & PAD_INPUT_LEFT)
@@ -43,13 +43,13 @@ void Camera::Process() {
 }
 
 // コンストラクタ
-Camera::Camera() {
+CAMERA::CAMERA() {
 
 	// 初期化処理
 	Initialize();
 }
 
 // デストラクタ
-Camera::~Camera() {
+CAMERA::~CAMERA() {
 
 }

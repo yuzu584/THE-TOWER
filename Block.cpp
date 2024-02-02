@@ -4,7 +4,7 @@
 #include <string>
 
 // ブロックのデータを代入する
-void Block::SetData(int num) {
+void BLOCK::SetData(int num) {
 
 	// ブロックIDから自分のブロックのデータを探す
 	int i = 0;
@@ -21,7 +21,7 @@ void Block::SetData(int num) {
 }
 
 // ブロックのモデルを描画
-void Block::Render(VECTOR pos) {
+void BLOCK::Render(VECTOR pos) {
 	if (modelHandle != -1) {
 		MV1SetScale(modelHandle, BLOCK_SCALE);
 		MV1SetPosition(modelHandle, pos);
@@ -30,7 +30,7 @@ void Block::Render(VECTOR pos) {
 }
 
 // ブロックを初期化
-void Block::Initialize() {
+void BLOCK::Initialize() {
 
 	// 空気ブロックのデータを代入
 	SetData(0);
@@ -40,28 +40,28 @@ void Block::Initialize() {
 }
 
 // コンストラクタ
-Block::Block() {
+BLOCK::BLOCK() {
 
 	// ブロックを初期化
 	Initialize();
 }
 
 // ブロックIDを取得
-int Block::GetId() {
+int BLOCK::GetId() {
 	return id;
 }
 
 // ブロック名を取得
-std::string Block::GetName() {
+std::string BLOCK::GetName() {
 	return name;
 }
 
 // ブロックの向きを取得
-int Block::GetDirection() {
+int BLOCK::GetDirection() {
 	return direction;
 }
 
 // ブロックの向きを指定
-void Block::SetDirection(int num) {
+void BLOCK::SetDirection(int num) {
 	direction = num;
 }

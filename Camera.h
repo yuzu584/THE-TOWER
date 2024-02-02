@@ -14,7 +14,7 @@ constexpr VECTOR POSITION_0_90_180_270[4] =          // カメラの視点ごとの座標
 	{STAGE_WIDTH_CENTER, 5.0f, (CAMERA_STAGE_DISTANCE * 2) - 1 }
 };
 
-class Camera
+class CAMERA
 {
 private:
 	VECTOR position; // 位置
@@ -27,8 +27,8 @@ public:
 	VECTOR GetPos() { return position; }  // カメラの座標を取得
 	VECTOR GetTarget() { return target; } // カメラのターゲット座標を取得
 
-	Camera();
-	~Camera();
+	CAMERA();
+	~CAMERA();
 };
 
-extern Camera camera; // カメラ
+extern CAMERA camera; // カメラ
