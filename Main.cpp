@@ -22,6 +22,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	SetBackgroundColor(0, 0, 0);
 
 	stage.Initialize(0);
+	player.Initialize();
 
 	// ESCキーが押されるか、ウインドウが閉じられるまでループ
 	while (ProcessMessage() == 0 && CheckHitKey(KEY_INPUT_ESCAPE) == 0)
@@ -40,6 +41,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 		// ステージを描画
 		stage.Render();
+
+		// プレイヤーの処理
+		player.Process();
 
 		// 裏画面の内容を表画面に反映
 		ScreenFlip();
