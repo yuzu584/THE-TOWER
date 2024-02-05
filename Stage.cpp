@@ -34,7 +34,7 @@ void STAGE::RenderFunc(VECTOR pos) {
 
 // ブロックにデータをセット(関数ポインタで指定)
 void STAGE::SetDataInBlockFunc(VECTOR pos) {
-	blockPlacement[static_cast<int>(pos.x)][static_cast<int>(pos.y)][static_cast<int>(pos.z)].SetData(pos.y < 1 ? static_cast<int>(pos.x) % 2 == 1 ? -1 : 1 : 0);
+	blockPlacement[static_cast<int>(pos.x)][static_cast<int>(pos.y)][static_cast<int>(pos.z)].SetData(pos.y < 1 ? static_cast<int>(pos.x) % 2 == 1 ? 1 : 1 : 0);
 }
 
 // ブロックのデータを読み込む
@@ -99,11 +99,19 @@ void STAGE::Initialize(int startDifficulty) {
 	LoadBlockData();                        // ブロックのデータを読み込む
 	SetDataInBlock();                       // ブロックのデータを初期化
 	difficulty[0] = startDifficulty;        // ステージ開始時の難易度を設定
+	blockPlacement[4][1][4].SetData(1);
+	blockPlacement[5][2][4].SetData(1);
+	blockPlacement[6][1][4].SetData(1);
 }
 
 // 指定した座標がステージの範囲内か判定
 bool STAGE::CheckPos(VECTOR pos) {
-	return ((pos.x >= 0) && (pos.y >= 0) && (pos.z >= 0) && (pos.x <= STAGE_WIDTH) && (pos.y <= STAGE_HEIGHT) && (pos.z <= STAGE_WIDTH));
+	return ((static_cast<int>(round(pos.x)) > -1.0f) &&
+		(static_cast<int>(round(pos.y)) > -1.0f) &&
+		(static_cast<int>(round(pos.z)) > -1.0f) &&
+		(pos.x < STAGE_WIDTH) &&
+		(pos.y < STAGE_HEIGHT) &&
+		(pos.z < STAGE_WIDTH));
 }
 
 // コンストラクタ

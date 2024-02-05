@@ -2,15 +2,15 @@
 #include "DxLib.h"
 
 constexpr float PLAYER_MOVE_SPEED = 0.05f; // 移動速度
-constexpr float PLAYER_JUMP_POWER = 0.2f; // ジャンプ力
-constexpr float PLAYER_GRAVITY = 0.01f; // 重力
+constexpr float PLAYER_JUMP_POWER = 0.11f; // ジャンプ力
+constexpr float PLAYER_GRAVITY = 0.005f; // 重力
 constexpr float PLAYER_ANGLE_SPEED = 0.2f; // 角度を変える速度
 constexpr int  PLAYER_MAX_HITCOLL = 512; // 処理するコリジョンポリゴンの最大数
-constexpr float PLAYER_COLL_SPHERE_SIZE = 1.0f;	// 周囲のポリゴン検出に使用する球のサイズ
-constexpr float PLAYER_HIT_WIDTH = 0.5f;		// 当たり判定カプセルの半径
-constexpr float PLAYER_HIT_HEIGHT = 0.5f;		// 当たり判定カプセルの高さ
+constexpr float PLAYER_COLL_SPHERE_SIZE = 3.0f;	// 周囲のポリゴン検出に使用する球のサイズ
+constexpr float PLAYER_HIT_WIDTH = 0.25f;		// 当たり判定カプセルの半径
+constexpr float PLAYER_HIT_HEIGHT = 0.25f;		// 当たり判定カプセルの高さ
 constexpr int PLAYER_HIT_TRYNUM = 16;		// 壁押し出し処理の最大試行回数
-constexpr float PLAYER_HIT_SLIDE_LENGTH = 0.01f;		// 一度の壁押し出し処理でスライドさせる距離
+constexpr float PLAYER_HIT_SLIDE_LENGTH = 0.005f;		// 一度の壁押し出し処理でスライドさせる距離
 
 enum STATE
 {

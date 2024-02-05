@@ -8,13 +8,13 @@ PLAYER player;
 void PLAYER::Initialize() {
 
 	// 座標を設定
-	position = VGet(4.5f, 1.0f, 4.5f);
+	position = VGet(0.0f, 1.0f, 0.0f);
 
 	// モデル読み込み
-	modelHandle = MV1LoadModel("BlockModel/WoodBox.mv1");
+	modelHandle = MV1LoadModel("BlockModel/Cube.mv1");
 
 	// スケールを設定
-	MV1SetScale(modelHandle, VGet(0.5f, 0.5f, 0.5f));
+	MV1SetScale(modelHandle, VGet(0.25f, 0.25f, 0.25f));
 }
 
 // プレイヤーの処理
@@ -83,7 +83,7 @@ void PLAYER::Process() {
 		}
 
 	// プレイヤーの状態が「ジャンプ」ではなく、且つジャンプボタンが押されていたらジャンプ
-	if (state != 2 && (input.GetEdgeInput() & PAD_INPUT_A))
+	if (state != 2 && (input.GetEdgeInput() & PAD_INPUT_10))
 	{
 		// 状態を「ジャンプ」にする
 		state = jump;
@@ -451,7 +451,7 @@ void PLAYER::Move(VECTOR moveVec) {
 
 			// 下降中かジャンプ中ではない場合の処理
 
-			// 床ポリゴンに当たったかどうかのフラグを倒しておく
+			// 床ポリゴンに当たったかどうかのフラグを倒す
 			hitFlag = false;
 
 			// 一番高い床ポリゴンにぶつける為の判定用変数を初期化
@@ -510,7 +510,7 @@ void PLAYER::Move(VECTOR moveVec) {
 					}
 					else
 					{
-						// 移動していない場合は立ち止り状態に
+						// 移動していない場合は立ち止り状態
 						state = neutral;
 					}
 				}
