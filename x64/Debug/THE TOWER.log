@@ -1,2 +1,11 @@
-﻿  Block.cpp
+﻿  Player.cpp
+C:\Users\student.MORIOKA\Desktop\THE TOWER\Camera.h(1,1): warning C4828: オフセット 0x416 から始まる、現在のソースの文字セット (コードページ 932) では使用できない文字がファイルに含まれています。
+C:\Users\student.MORIOKA\Desktop\THE TOWER\Input.h(1,1): warning C4828: オフセット 0x1b1 から始まる、現在のソースの文字セット (コードページ 932) では使用できない文字がファイルに含まれています。
+C:\Users\student.MORIOKA\Desktop\THE TOWER\Player.cpp(292,19): warning C4805: '==': 演算中の 'int' 型と 'bool' 型の混用は安全ではありません
+C:\Users\student.MORIOKA\Desktop\THE TOWER\Player.cpp(361,18): warning C4805: '==': 演算中の 'int' 型と 'bool' 型の混用は安全ではありません
+C:\Users\student.MORIOKA\Desktop\THE TOWER\Player.cpp(429,20): warning C4805: '==': 演算中の 'int' 型と 'bool' 型の混用は安全ではありません
+C:\Users\student.MORIOKA\Desktop\THE TOWER\Player.cpp(439,19): warning C4805: '==': 演算中の 'int' 型と 'bool' 型の混用は安全ではありません
+C:\Users\student.MORIOKA\Desktop\THE TOWER\Player.cpp(470,145): warning C4305: '引数': 'double' から 'float' へ切り詰めます。
+C:\Users\student.MORIOKA\Desktop\THE TOWER\Player.cpp(482,20): warning C4805: '==': 演算中の 'int' 型と 'bool' 型の混用は安全ではありません
+C:\Users\student.MORIOKA\Desktop\THE TOWER\Player.cpp(492,19): warning C4805: '==': 演算中の 'int' 型と 'bool' 型の混用は安全ではありません
   THE TOWER.vcxproj -> C:\Users\student.MORIOKA\Desktop\THE TOWER\x64\Debug\THE TOWER.exe

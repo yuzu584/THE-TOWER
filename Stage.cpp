@@ -102,6 +102,8 @@ void STAGE::Initialize(int startDifficulty) {
 	blockPlacement[2][1][4].SetData(1);
 	blockPlacement[4][1][4].SetData(-1);
 	blockPlacement[6][1][4].SetData(-2);
+	blockPlacement[6][2][5].SetData(-2);
+	blockPlacement[6][3][6].SetData(-2);
 }
 
 // 指定した座標がステージの範囲内か判定

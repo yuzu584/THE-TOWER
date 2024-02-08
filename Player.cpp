@@ -467,12 +467,12 @@ void PLAYER::Move(VECTOR moveVec) {
 				if (state == 2)
 				{
 					// ジャンプ中の場合は頭の先から足先より少し低い位置の間で当たっているかを判定
-					lineRes = HitCheck_Line_Triangle(VAdd(nowPos, VGet(0.0f, PLAYER_HIT_HEIGHT, 0.0f)), VAdd(nowPos, VGet(0.0f, -PLAYER_HIT_HEIGHT, 0.0f)), poly->Position[0], poly->Position[1], poly->Position[2]);
+					lineRes = HitCheck_Line_Triangle(VAdd(nowPos, VGet(0.0f, PLAYER_HIT_HEIGHT, 0.0f)), VAdd(nowPos, VGet(0.0f, -PLAYER_HIT_HEIGHT - 0.05, 0.0f)), poly->Position[0], poly->Position[1], poly->Position[2]);
 				}
 				else
 				{
 					// 走っている場合は頭の先からそこそこ低い位置の間で当たっているかを判定( 傾斜で落下状態に移行してしまわない為 )
-					lineRes = HitCheck_Line_Triangle(VAdd(nowPos, VGet(0.0f, PLAYER_HIT_HEIGHT, 0.0f)), VAdd(nowPos, VGet(0.0f, -PLAYER_HIT_HEIGHT, 0.0f)), poly->Position[0], poly->Position[1], poly->Position[2]);
+					lineRes = HitCheck_Line_Triangle(VAdd(nowPos, VGet(0.0f, PLAYER_HIT_HEIGHT, 0.0f)), VAdd(nowPos, VGet(0.0f, -PLAYER_HIT_HEIGHT - 0.5, 0.0f)), poly->Position[0], poly->Position[1], poly->Position[2]);
 				}
 
 				// 当たっていなかったら何もしない
