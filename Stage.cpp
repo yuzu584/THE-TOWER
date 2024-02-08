@@ -99,9 +99,9 @@ void STAGE::Initialize(int startDifficulty) {
 	LoadBlockData();                        // ブロックのデータを読み込む
 	SetDataInBlock();                       // ブロックのデータを初期化
 	difficulty[0] = startDifficulty;        // ステージ開始時の難易度を設定
-	blockPlacement[4][1][4].SetData(1);
-	blockPlacement[5][2][4].SetData(1);
-	blockPlacement[6][1][4].SetData(1);
+	blockPlacement[2][1][4].SetData(1);
+	blockPlacement[4][1][4].SetData(-1);
+	blockPlacement[6][1][4].SetData(-2);
 }
 
 // 指定した座標がステージの範囲内か判定

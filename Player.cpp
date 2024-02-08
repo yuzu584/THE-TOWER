@@ -226,8 +226,8 @@ void PLAYER::Move(VECTOR moveVec) {
 	// hitDimの有効な数は検出したブロックの数
 	hitDimNum = 7;
 
-	// x軸かz軸に 0.01f 以上移動した場合は移動フラグを立てる
-	if (fabs(moveVec.x) > 0.01f || fabs(moveVec.z) > 0.01f)
+	// x軸かz軸に 0.001f 以上移動した場合は移動フラグを立てる
+	if (fabs(moveVec.x) > 0.001f || fabs(moveVec.z) > 0.001f)
 	{
 		moveFlag = true;
 	}
@@ -530,7 +530,6 @@ void PLAYER::Move(VECTOR moveVec) {
 	DrawFormatString(0, 0, GetColor(255, 255, 255), "x = %.3f", position.x);
 	DrawFormatString(0, 15, GetColor(255, 255, 255), "y = %.3f", position.y);
 	DrawFormatString(0, 30, GetColor(255, 255, 255), "z = %.3f", position.z);
-	DrawFormatString(0, 45, GetColor(255, 255, 255), "ModelHandle = %d", modelHandle);
 
 	// 新しい座標を保存する
 	position = nowPos;
