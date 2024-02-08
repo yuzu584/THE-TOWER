@@ -219,6 +219,7 @@ void PLAYER::Move(VECTOR moveVec) {
 	{
 		if (stage.CheckPos(blockPos[i])) {
 			hitDim[i] = MV1CollCheck_Sphere(stage.GetBlockPlacement(blockPos[i]).GetModelHandle(), -1, position, PLAYER_COLL_SPHERE_SIZE + VSize(moveVec));
+			DrawFormatString(0, 45 + (i * 15), GetColor(255, 255, 255), "blockPos[%d] = %d", i, stage.GetBlockPlacement(blockPos[i]).GetModelHandle());
 		}
 		else hitDim[i].Dim = NULL;
 	}
@@ -248,7 +249,7 @@ void PLAYER::Move(VECTOR moveVec) {
 			if (hitDim[i].Dim != NULL) {
 
 				// 壁ポリゴンか判断(ポリゴンの法線のY成分が限りなく0に近いかで判断)
-				if (hitDim[j].Dim[i].Normal.y < 0.000001f && hitDim[j].Dim[i].Normal.y > -0.000001f) {
+				if (hitDim[j].Dim[i].Normal.y < 0.0001f && hitDim[j].Dim[i].Normal.y > -0.0001f) {
 
 					// 壁ポリゴンの場合でも、プレイヤーの足元のY座標+0.1fより高いポリゴンのみ当たり判定を行う
 					if (hitDim[j].Dim[i].Position[0].y > position.y + 0.1f ||
@@ -298,7 +299,7 @@ void PLAYER::Move(VECTOR moveVec) {
 				poly = wall[i];
 
 				// ポリゴンとプレイヤーが衝突していなければ次のカウントへ
-				if (HitCheck_Capsule_Triangle(nowPos, VAdd(nowPos, VGet(0.0f, PLAYER_HIT_HEIGHT, 0.0f)), PLAYER_HIT_WIDTH,
+				if (HitCheck_Capsule_Triangle(VSub(nowPos, VGet(0.0f, PLAYER_HIT_HEIGHT, 0.0f)), VAdd(nowPos, VGet(0.0f, PLAYER_HIT_HEIGHT, 0.0f)), PLAYER_HIT_WIDTH,
 					poly->Position[0], poly->Position[1], poly->Position[2]) == FALSE)
 					continue;
 
@@ -325,7 +326,7 @@ void PLAYER::Move(VECTOR moveVec) {
 					poly = wall[j];
 
 					// 当たっていたらループから抜ける
-					if (HitCheck_Capsule_Triangle(nowPos, VAdd(nowPos, VGet(0.0f, PLAYER_HIT_HEIGHT, 0.0f)), PLAYER_HIT_WIDTH,
+					if (HitCheck_Capsule_Triangle(VSub(nowPos, VGet(0.0f, PLAYER_HIT_HEIGHT, 0.0f)), VAdd(nowPos, VGet(0.0f, PLAYER_HIT_HEIGHT, 0.0f)), PLAYER_HIT_WIDTH,
 						poly->Position[0], poly->Position[1], poly->Position[2]) == TRUE)
 						break;
 				}
@@ -349,7 +350,7 @@ void PLAYER::Move(VECTOR moveVec) {
 				poly = wall[i];
 
 				// 当たっていたらループから抜ける
-				if (HitCheck_Capsule_Triangle(nowPos, VAdd(nowPos, VGet(0.0f, PLAYER_HIT_HEIGHT, 0.0f)), PLAYER_HIT_WIDTH, poly->Position[0], poly->Position[1], poly->Position[2]) == TRUE)
+				if (HitCheck_Capsule_Triangle(VSub(nowPos, VGet(0.0f, PLAYER_HIT_HEIGHT, 0.0f)), VAdd(nowPos, VGet(0.0f, PLAYER_HIT_HEIGHT, 0.0f)), PLAYER_HIT_WIDTH, poly->Position[0], poly->Position[1], poly->Position[2]) == TRUE)
 				{
 					hitFlag = true;
 					break;
@@ -370,7 +371,7 @@ void PLAYER::Move(VECTOR moveVec) {
 					poly = wall[i];
 
 					// プレイヤーと当たっているかを判定
-					if (HitCheck_Capsule_Triangle(nowPos, VAdd(nowPos, VGet(0.0f, PLAYER_HIT_HEIGHT, 0.0f)), PLAYER_HIT_WIDTH,
+					if (HitCheck_Capsule_Triangle(VSub(nowPos, VGet(0.0f, PLAYER_HIT_HEIGHT, 0.0f)), VAdd(nowPos, VGet(0.0f, PLAYER_HIT_HEIGHT, 0.0f)), PLAYER_HIT_WIDTH,
 						poly->Position[0], poly->Position[1], poly->Position[2]) == FALSE)
 						continue;
 
@@ -382,7 +383,7 @@ void PLAYER::Move(VECTOR moveVec) {
 					{
 						// 当たっていたらループを抜ける
 						poly = wall[j];
-						if (HitCheck_Capsule_Triangle(nowPos, VAdd(nowPos, VGet(0.0f, PLAYER_HIT_HEIGHT, 0.0f)), PLAYER_HIT_WIDTH,
+						if (HitCheck_Capsule_Triangle(VSub(nowPos, VGet(0.0f, PLAYER_HIT_HEIGHT, 0.0f)), VAdd(nowPos, VGet(0.0f, PLAYER_HIT_HEIGHT, 0.0f)), PLAYER_HIT_WIDTH,
 							poly->Position[0], poly->Position[1], poly->Position[2]) == TRUE)
 							break;
 					}
