@@ -216,7 +216,6 @@ void PLAYER::Move(VECTOR moveVec) {
 	{
 		if (stage.CheckPos(blockPos[i])) {
 			hitDim[i] = MV1CollCheck_Sphere(stage.GetBlockPlacement(blockPos[i]).GetModelHandle(), -1, position, PLAYER_COLL_SPHERE_SIZE + VSize(moveVec));
-			DrawFormatString(0, 45 + (i * 15), GetColor(255, 255, 255), "blockPos[%d] = %d", i, stage.GetBlockPlacement(blockPos[i]).GetModelHandle());
 		}
 		else hitDim[i].Dim = NULL;
 	}
@@ -550,12 +549,10 @@ void PLAYER::Move(VECTOR moveVec) {
 		}
 	}
 
-	DrawFormatString(0, 0, GetColor(255, 255, 255), "x = %.3f", position.x);
-	DrawFormatString(0, 15, GetColor(255, 255, 255), "y = %.3f", position.y);
-	DrawFormatString(0, 30, GetColor(255, 255, 255), "z = %.3f", position.z);
-	DrawFormatString(0, 165, GetColor(255, 255, 255), "WASD      : PLAYER MOVE");
-	DrawFormatString(0, 180, GetColor(255, 255, 255), "SPACE KEY : PLAYER JUMP");
-	DrawFormatString(0, 195, GetColor(255, 255, 255), "ARROW KEY : CAMERA MOVE");
+	DrawFormatString(0, 0, GetColor(255, 255, 255), "XYZ: %.3f / %.3f / %.3f", position.x, position.y, position.z);
+	DrawFormatString(0, 30, GetColor(255, 255, 255), "WASD      : PLAYER MOVE");
+	DrawFormatString(0, 45, GetColor(255, 255, 255), "SPACE KEY : PLAYER JUMP");
+	DrawFormatString(0, 60, GetColor(255, 255, 255), "ARROW KEY : CAMERA MOVE");
 
 	// êVÇµÇ¢ç¿ïWÇï€ë∂Ç∑ÇÈ
 	position = nowPos;
