@@ -3,15 +3,15 @@
 #include "DxLib.h"
 #include "Stage.h"
 
-constexpr float CAMERA_ANGLE_SPEED = 2.0f;           // カメラの視点移動速度
-constexpr float CAMERA_PLAYER_HEIGHT = 5.0f;         // プレイヤーの座標からどれだけ高い位置にいるか
-constexpr float CAMERA_STAGE_DISTANCE = STAGE_WIDTH; // カメラとステージの距離
-constexpr VECTOR POSITION_0_90_180_270[4] =          // カメラの視点ごとの座標
+constexpr float CAMERA_ANGLE_SPEED = 2.0f;            // カメラの視点移動速度
+constexpr float CAMERA_PLAYER_HEIGHT = 7.0f;          // プレイヤーの座標からどれだけ高い位置にいるか
+constexpr float CAMERA_STAGE_DISTANCE = STAGE_WIDTH;  // カメラとステージの距離
+constexpr VECTOR POSITION_0_90_180_270[4] =           // カメラの視点ごとの座標
 {
-	{ (CAMERA_STAGE_DISTANCE * 2) - 1, 5.0f, STAGE_WIDTH_CENTER },
-	{ STAGE_WIDTH_CENTER, 5.0f, -CAMERA_STAGE_DISTANCE },
-	{ -CAMERA_STAGE_DISTANCE, 5.0f, STAGE_WIDTH_CENTER },
-	{STAGE_WIDTH_CENTER, 5.0f, (CAMERA_STAGE_DISTANCE * 2) - 1 }
+	{ (CAMERA_STAGE_DISTANCE * 2) - 1, CAMERA_PLAYER_HEIGHT, STAGE_WIDTH_CENTER },
+	{ STAGE_WIDTH_CENTER, CAMERA_PLAYER_HEIGHT, -CAMERA_STAGE_DISTANCE },
+	{ -CAMERA_STAGE_DISTANCE, CAMERA_PLAYER_HEIGHT, STAGE_WIDTH_CENTER },
+	{ STAGE_WIDTH_CENTER, CAMERA_PLAYER_HEIGHT, (CAMERA_STAGE_DISTANCE * 2) - 1 }
 };
 
 class CAMERA

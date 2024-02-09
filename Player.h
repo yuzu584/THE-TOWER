@@ -9,8 +9,8 @@ constexpr int  PLAYER_MAX_HITCOLL = 2048; // 処理するコリジョンポリゴンの最大数
 constexpr float PLAYER_COLL_SPHERE_SIZE = 3.0f;	// 周囲のポリゴン検出に使用する球のサイズ
 constexpr float PLAYER_HIT_WIDTH = 0.25f;		// 当たり判定カプセルの半径
 constexpr float PLAYER_HIT_HEIGHT = 0.25f;		// 当たり判定カプセルの高さ
-constexpr int PLAYER_HIT_TRYNUM = 32;		// 壁押し出し処理の最大試行回数
-constexpr float PLAYER_HIT_SLIDE_LENGTH = 0.005f;		// 一度の壁押し出し処理でスライドさせる距離
+constexpr int PLAYER_HIT_TRYNUM = 16;		// 壁押し出し処理の最大試行回数
+constexpr float PLAYER_HIT_SLIDE_LENGTH = 0.02f;		// 一度の壁押し出し処理でスライドさせる距離
 
 enum STATE
 {
@@ -26,6 +26,7 @@ public:
 	void Process();    // プレイヤーの処理
 	void AngleProcess(); // 向きの処理
 	void Move(VECTOR moveVec);         // 移動処理
+	VECTOR GetPosition() { return position; }
 
 private:
 	VECTOR position; // 座標

@@ -11,10 +11,7 @@ void PLAYER::Initialize() {
 	position = VGet(0.0f, 1.0f, 0.0f);
 
 	// モデル読み込み
-	modelHandle = MV1LoadModel("BlockModel/Cube.mv1");
-
-	// スケールを設定
-	MV1SetScale(modelHandle, VGet(0.25f, 0.25f, 0.25f));
+	modelHandle = MV1LoadModel("BlockModel/Player.mv1");
 }
 
 // プレイヤーの処理
@@ -22,7 +19,7 @@ void PLAYER::Process() {
 	VECTOR upMoveVec;   // 上入力時の移動方向
 	VECTOR leftMoveVec; // 左入力時の移動方向
 	VECTOR moveVec;     // 最終的な移動方向
-	int moveFlag;       // 移動したかどうか( true : 移動した  false : 移動していない )
+	bool moveFlag;      // 移動したかどうか( true : 移動した  false : 移動していない )
 
 	// 移動方向ベクトルを算出
 	// 上方向の移動ベクトルはカメラの視線方向からY成分を抜いたもの
@@ -49,7 +46,7 @@ void PLAYER::Process() {
 		moveVec = VAdd(moveVec, leftMoveVec);
 
 		// 移動フラグを立てる
-		moveFlag = 1;
+		moveFlag = true;
 	}
 	else
 		// 右入力されたらカメラから見て右方向に移動
@@ -59,7 +56,7 @@ void PLAYER::Process() {
 			moveVec = VAdd(moveVec, VScale(leftMoveVec, -1.0f));
 
 			// 移動フラグを立てる
-			moveFlag = 1;
+			moveFlag = true;
 		}
 
 	// 上入力されたらカメラの見ている方向に移動
@@ -69,7 +66,7 @@ void PLAYER::Process() {
 		moveVec = VAdd(moveVec, upMoveVec);
 
 		// 移動フラグを立てる
-		moveFlag = 1;
+		moveFlag = true;
 	}
 	else
 		// 下入力されたらカメラの方向に移動する
@@ -79,7 +76,7 @@ void PLAYER::Process() {
 			moveVec = VAdd(moveVec, VScale(upMoveVec, -1.0f));
 
 			// 移動フラグを立てる
-			moveFlag = 1;
+			moveFlag = true;
 		}
 
 	// プレイヤーの状態が「ジャンプ」ではなく、且つジャンプボタンが押されていたらジャンプ
@@ -183,9 +180,8 @@ void PLAYER::AngleProcess() {
 
 // 移動処理
 void PLAYER::Move(VECTOR moveVec) {
-	int i, j, k;										// 汎用カウンタ変数
-	int moveFlag;										// 水平方向に移動したかどうかのフラグ( 0:移動していない  1:移動した )
-	int hitFlag;										// ポリゴンに当たったかどうかを記憶する変数( 0:当たっていない  1:当たった )
+	bool moveFlag;										// 水平方向に移動したかどうかのフラグ( false:移動していない  true:移動した )
+	bool hitFlag;										// ポリゴンに当たったかどうかを記憶する変数( false:当たっていない  true:当たった )
 	MV1_COLL_RESULT_POLY_DIM hitDim[7];					// プレイヤーの周囲のポリゴンを検出した結果が代入される当たり判定結果構造体
 	int hitDimNum;										// HitDim の有効な配列要素数
 	int wallNum;										// 壁ポリゴンと判断されたポリゴンの数
@@ -196,6 +192,7 @@ void PLAYER::Move(VECTOR moveVec) {
 	HITRESULT_LINE lineRes;								// 線分とポリゴンとの当たり判定の結果を代入する構造体
 	VECTOR oldPos;										// 移動前の座標	
 	VECTOR nowPos;										// 移動後の座標
+	bool forBreake = false;                             // 2重以上のfor文を抜けるときに使用する
 
 	// 移動前の座標を保存
 	oldPos = position;
@@ -215,7 +212,7 @@ void PLAYER::Move(VECTOR moveVec) {
 	};
 
 	// プレイヤーの周囲のブロックのポリゴンを取得
-	for ( i = 0; i < 7; ++i)
+	for ( int i = 0; i < 7; ++i)
 	{
 		if (stage.CheckPos(blockPos[i])) {
 			hitDim[i] = MV1CollCheck_Sphere(stage.GetBlockPlacement(blockPos[i]).GetModelHandle(), -1, position, PLAYER_COLL_SPHERE_SIZE + VSize(moveVec));
@@ -243,8 +240,8 @@ void PLAYER::Move(VECTOR moveVec) {
 	floorNum = 0;
 
 	// 検出したブロックのポリゴンの数繰り返し
-	for (j = 0; j < hitDimNum; ++j) {
-		for (i = 0; i < hitDim[j].HitNum; ++i) {
+	for (int j = 0; j < hitDimNum; ++j) {
+		for (int i = 0; i < hitDim[j].HitNum; ++i) {
 
 			if (hitDim[i].Dim != NULL) {
 
@@ -293,7 +290,7 @@ void PLAYER::Move(VECTOR moveVec) {
 		if (moveFlag == true) {
 
 			// 壁ポリゴンの数繰り返す
-			for ( i = 0; i < wallNum; ++i)
+			for (int i = 0; i < wallNum; ++i)
 			{
 				// i番目の壁ポリゴンのアドレスを取得
 				poly = wall[i];
@@ -320,22 +317,32 @@ void PLAYER::Move(VECTOR moveVec) {
 				nowPos = VAdd(oldPos, slideVec);
 
 				// 移動後の座標で壁ポリゴンと当たっていないかどうかを判定する
-				for (j = 0; j < wallNum; ++j) {
+				{
+					for (int j = 0; j < wallNum; ++j) {
 
-					// j番目の壁ポリゴンのアドレスを取得
-					poly = wall[j];
+						// j番目の壁ポリゴンのアドレスを取得
+						poly = wall[j];
 
-					// 当たっていたらループから抜ける
-					if (HitCheck_Capsule_Triangle(VSub(nowPos, VGet(0.0f, PLAYER_HIT_HEIGHT, 0.0f)), VAdd(nowPos, VGet(0.0f, PLAYER_HIT_HEIGHT, 0.0f)), PLAYER_HIT_WIDTH,
-						poly->Position[0], poly->Position[1], poly->Position[2]) == TRUE)
+						// j が wallNum の場合はどのポリゴンとも当たらなかったということなので
+						// ループから抜ける
+						if (j == wallNum) {
+							hitFlag = false;
+							forBreake = true;
+						}
+						else if (forBreake) forBreake = false;
+
+						// 当たっていたらループから抜ける
+						if (HitCheck_Capsule_Triangle(VSub(nowPos, VGet(0.0f, PLAYER_HIT_HEIGHT, 0.0f)), VAdd(nowPos, VGet(0.0f, PLAYER_HIT_HEIGHT, 0.0f)), PLAYER_HIT_WIDTH,
+							poly->Position[0], poly->Position[1], poly->Position[2]) == TRUE)
+							break;
+					}
+
+					// j が wallNum の場合はどのポリゴンとも当たらなかったということなので
+					// ループから抜ける
+					if (forBreake) {
+						forBreake = false;
 						break;
-				}
-
-				// j が wallNum の場合はどのポリゴンとも当たらなかったということなので
-				// ループから抜ける
-				if (j == wallNum) {
-					hitFlag = 0;
-					break;
+					}
 				}
 			}
 		}
@@ -344,7 +351,7 @@ void PLAYER::Move(VECTOR moveVec) {
 			// 移動していない場合の処理
 
 			// 壁ポリゴンの数繰り返し
-			for (i = 0; i < wallNum; ++i) {
+			for (int i = 0; i < wallNum; ++i) {
 
 				// i番目の壁ポリゴンのアドレスを取得
 				poly = wall[i];
@@ -362,10 +369,10 @@ void PLAYER::Move(VECTOR moveVec) {
 		if (hitFlag == true)
 		{
 			// 壁からの押し出し処理を試みる最大数だけ繰り返し
-			for (k = 0; k < PLAYER_HIT_TRYNUM; k++)
+			for (int k = 0; k < PLAYER_HIT_TRYNUM; k++)
 			{
 				// 壁ポリゴンの数だけ繰り返し
-				for (i = 0; i < wallNum; i++)
+				for (int i = 0; i < wallNum; i++)
 				{
 					// i番目の壁ポリゴンのアドレスを取得
 					poly = wall[i];
@@ -379,8 +386,12 @@ void PLAYER::Move(VECTOR moveVec) {
 					nowPos = VAdd(nowPos, VScale(poly->Normal, PLAYER_HIT_SLIDE_LENGTH));
 
 					// 移動した上で壁ポリゴンと接触しているか判定
-					for (j = 0; j < wallNum; j++)
+					for (int j = 0; j < wallNum; j++)
 					{
+						// 全てのポリゴンと当たっていなかったらこのループを出た後のループを抜ける
+						if (j == wallNum) forBreake = true;
+						else if (forBreake) forBreake = false;
+
 						// 当たっていたらループを抜ける
 						poly = wall[j];
 						if (HitCheck_Capsule_Triangle(VSub(nowPos, VGet(0.0f, PLAYER_HIT_HEIGHT, 0.0f)), VAdd(nowPos, VGet(0.0f, PLAYER_HIT_HEIGHT, 0.0f)), PLAYER_HIT_WIDTH,
@@ -388,12 +399,23 @@ void PLAYER::Move(VECTOR moveVec) {
 							break;
 					}
 
-					// 全てのポリゴンと当たっていなかったらループ終了
-					if (j == wallNum) break;
+					// ループ終了
+					if (forBreake) {
+						forBreake = false;
+						break;
+					} 
+
+					// i が wallNum ではない場合は全部のポリゴンで押し出しを試みる前に全ての壁ポリゴンと接触しなくなったということなので
+					// このループを出た後のループを抜ける
+					if (i != wallNum)  forBreake = true;
+					else if (forBreake) forBreake = false;
 				}
 
-				// i が wallNum ではない場合は全部のポリゴンで押し出しを試みる前に全ての壁ポリゴンと接触しなくなったということなのでループから抜ける
-				if (i != wallNum) break;
+				// ループ終了
+				if (forBreake) {
+					forBreake = false;
+					break;
+				}
 			}
 		}
 	}
@@ -415,7 +437,7 @@ void PLAYER::Move(VECTOR moveVec) {
 			hitFlag = false;
 
 			// 床ポリゴンの数だけ繰り返し
-			for (i = 0; i < floorNum; i++)
+			for (int i = 0; i < floorNum; i++)
 			{
 				// i番目の床ポリゴンのアドレスを床ポリゴンポインタ配列から取得
 				poly = floor[i];
@@ -459,7 +481,7 @@ void PLAYER::Move(VECTOR moveVec) {
 			MaxY = 0.0f;
 
 			// 床ポリゴンの数だけ繰り返し
-			for (i = 0; i < floorNum; i++)
+			for (int i = 0; i < floorNum; i++)
 			{
 				// i番目の床ポリゴンのアドレスを床ポリゴンポインタ配列から取得
 				poly = floor[i];
@@ -468,12 +490,12 @@ void PLAYER::Move(VECTOR moveVec) {
 				if (state == 2)
 				{
 					// ジャンプ中の場合は頭の先から足先より少し低い位置の間で当たっているかを判定
-					lineRes = HitCheck_Line_Triangle(VAdd(nowPos, VGet(0.0f, PLAYER_HIT_HEIGHT, 0.0f)), VAdd(nowPos, VGet(0.0f, -PLAYER_HIT_HEIGHT - 0.05, 0.0f)), poly->Position[0], poly->Position[1], poly->Position[2]);
+					lineRes = HitCheck_Line_Triangle(VAdd(nowPos, VGet(0.0f, PLAYER_HIT_HEIGHT, 0.0f)), VAdd(nowPos, VGet(0.0f, -PLAYER_HIT_HEIGHT - 0.05f, 0.0f)), poly->Position[0], poly->Position[1], poly->Position[2]);
 				}
 				else
 				{
 					// 走っている場合は頭の先からそこそこ低い位置の間で当たっているかを判定( 傾斜で落下状態に移行してしまわない為 )
-					lineRes = HitCheck_Line_Triangle(VAdd(nowPos, VGet(0.0f, PLAYER_HIT_HEIGHT, 0.0f)), VAdd(nowPos, VGet(0.0f, -PLAYER_HIT_HEIGHT - 0.5, 0.0f)), poly->Position[0], poly->Position[1], poly->Position[2]);
+					lineRes = HitCheck_Line_Triangle(VAdd(nowPos, VGet(0.0f, PLAYER_HIT_HEIGHT, 0.0f)), VAdd(nowPos, VGet(0.0f, -PLAYER_HIT_HEIGHT - 0.2f, 0.0f)), poly->Position[0], poly->Position[1], poly->Position[2]);
 				}
 
 				// 当たっていなかったら何もしない
@@ -531,6 +553,9 @@ void PLAYER::Move(VECTOR moveVec) {
 	DrawFormatString(0, 0, GetColor(255, 255, 255), "x = %.3f", position.x);
 	DrawFormatString(0, 15, GetColor(255, 255, 255), "y = %.3f", position.y);
 	DrawFormatString(0, 30, GetColor(255, 255, 255), "z = %.3f", position.z);
+	DrawFormatString(0, 165, GetColor(255, 255, 255), "WASD      : PLAYER MOVE");
+	DrawFormatString(0, 180, GetColor(255, 255, 255), "SPACE KEY : PLAYER JUMP");
+	DrawFormatString(0, 195, GetColor(255, 255, 255), "ARROW KEY : CAMERA MOVE");
 
 	// 新しい座標を保存する
 	position = nowPos;
@@ -542,7 +567,7 @@ void PLAYER::Move(VECTOR moveVec) {
 	MV1DrawModel(modelHandle);
 
 	// 検出したプレイヤーの周囲のポリゴン情報を開放する
-	for (i = 0; i < hitDimNum; i++)
+	for (int i = 0; i < hitDimNum; i++)
 	{
 		MV1CollResultPolyDimTerminate(hitDim[i]);
 	}

@@ -9,6 +9,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	// ウインドウモードで起動
 	ChangeWindowMode(true);
 
+	// 画面サイズを設定
+	SetGraphMode(800, 600, 16);
+
 	// ライブラリの初期化
 	if (DxLib_Init() == -1) return -1;
 
@@ -48,7 +51,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		// 裏画面の内容を表画面に反映
 		ScreenFlip();
 
-		// １７ミリ秒(約秒間６０フレームだった時の１フレームあたりの経過時間)
+		// 17ミリ秒(約秒間60フレームだった時の1フレームあたりの経過時間)
 		// 経過するまでここで待つ
 		while (GetNowCount() - time < 17)
 		{
