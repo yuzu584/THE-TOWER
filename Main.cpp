@@ -22,10 +22,13 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	SetCameraNearFar(0.1f, 300.0f);
 
 	// 背景の色を設定
-	SetBackgroundColor(0, 0, 0);
+	SetBackgroundColor(128, 128, 128);
 
 	stage.Initialize(0);
 	player.Initialize();
+
+	// 標準ライトの方向をY軸のマイナス方向にする
+	SetLightDirection(VGet(0.5f, -1.0f, 0.5f));
 
 	// ESCキーが押されるか、ウインドウが閉じられるまでループ
 	while (ProcessMessage() == 0 && CheckHitKey(KEY_INPUT_ESCAPE) == 0)

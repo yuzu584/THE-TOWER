@@ -160,6 +160,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="BlockModel\Cube.mv1" />
+    <None Include="BlockModel\GrassBlock.mv1" />
     <None Include="BlockModel\Player.mv1" />
     <None Include="BlockModel\Stairs.mv1" />
     <None Include="BlockModel\WoodBox.mv1" />

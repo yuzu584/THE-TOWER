@@ -34,7 +34,7 @@ void STAGE::RenderFunc(VECTOR pos) {
 
 // ブロックにデータをセット(関数ポインタで指定)
 void STAGE::SetDataInBlockFunc(VECTOR pos) {
-	blockPlacement[static_cast<int>(pos.x)][static_cast<int>(pos.y)][static_cast<int>(pos.z)].SetData(pos.y < 1 ? static_cast<int>(pos.x) % 2 == 1 ? 1 : 1 : 0);
+	blockPlacement[static_cast<int>(pos.x)][static_cast<int>(pos.y)][static_cast<int>(pos.z)].SetData(pos.y < 1 ? static_cast<int>(pos.x) % 2 == 1 ? -1 : -1 : 0);
 }
 
 // ブロックのデータを読み込む
@@ -102,6 +102,7 @@ void STAGE::Initialize(int startDifficulty) {
 	blockPlacement[2][1][4].SetData(1);
 	blockPlacement[4][1][4].SetData(-1);
 	blockPlacement[6][1][4].SetData(-2);
+	blockPlacement[8][1][4].SetData(2);
 }
 
 // 指定した座標がステージの範囲内か判定

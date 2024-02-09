@@ -13,3 +13,7 @@ none
 1
 wood_box
 BlockModel\WoodBox.mv1
+
+2
+grass_block
+BlockModel\GrassBlock.mv1

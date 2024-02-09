@@ -4,7 +4,7 @@
 #include <string>
 #include <fstream>
 
-constexpr int BLOCK_TYPE_AMOUNT = 4;                 // ブロックの種類の数
+constexpr int BLOCK_TYPE_AMOUNT = 5;                 // ブロックの種類の数
 constexpr VECTOR BLOCK_SCALE = { 0.5f, 0.5f, 0.5f }; // ブロックのスケール
 
 class BLOCK {
