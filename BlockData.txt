@@ -1,3 +1,7 @@
+-3
+test_slope_block
+BlockModel\Slope.mv1
+
 -2
 test_stairs_block
 BlockModel\Stairs.mv1

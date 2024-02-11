@@ -248,9 +248,9 @@ void PLAYER::Move(VECTOR moveVec) {
 				if (hitDim[j].Dim[i].Normal.y < 0.0001f && hitDim[j].Dim[i].Normal.y > -0.0001f) {
 
 					// 壁ポリゴンの場合でも、プレイヤーの足元のY座標+0.1fより高いポリゴンのみ当たり判定を行う
-					if (hitDim[j].Dim[i].Position[0].y > position.y + 0.1f ||
-						hitDim[j].Dim[i].Position[1].y > position.y + 0.1f ||
-						hitDim[j].Dim[i].Position[2].y > position.y + 0.1f) {
+					if (hitDim[j].Dim[i].Position[0].y > position.y + 0.2f ||
+						hitDim[j].Dim[i].Position[1].y > position.y + 0.2f ||
+						hitDim[j].Dim[i].Position[2].y > position.y + 0.2f) {
 
 						// ポリゴンの数が列挙できる限界数に達していなければポリゴンを配列に追加
 						if (wallNum < PLAYER_MAX_HITCOLL) {
