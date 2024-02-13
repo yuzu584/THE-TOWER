@@ -3,6 +3,7 @@
 #include "Input.h"
 #include "Camera.h"
 #include "Player.h"
+#include "StageCreate.h"
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
@@ -29,6 +30,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 	// 標準ライトの方向をY軸のマイナス方向にする
 	SetLightDirection(VGet(0.5f, -1.0f, 0.5f));
+
+	stage.Create();
 
 	// ESCキーが押されるか、ウインドウが閉じられるまでループ
 	while (ProcessMessage() == 0 && CheckHitKey(KEY_INPUT_ESCAPE) == 0)

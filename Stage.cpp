@@ -1,5 +1,5 @@
-#include "DxLib.h"
 #include "Stage.h"
+#include "StageCreate.h"
 
 #include <fstream>
 
@@ -12,7 +12,9 @@ BLOCK STAGE::blockPlacement[STAGE_WIDTH][STAGE_HEIGHT][STAGE_WIDTH];
 
 // ステージの生成
 void STAGE::Create() {
-
+	test_create_process.Initialize();
+	test_create_process.SetStageFunc();
+	createProcess.FuncProcess(1);
 }
 
 // ステージの描画
@@ -34,7 +36,7 @@ void STAGE::RenderFunc(VECTOR pos) {
 
 // ブロックにデータをセット(関数ポインタで指定)
 void STAGE::SetDataInBlockFunc(VECTOR pos) {
-	blockPlacement[static_cast<int>(pos.x)][static_cast<int>(pos.y)][static_cast<int>(pos.z)].SetData(pos.y < 1 ? static_cast<int>(pos.x) % 2 == 1 ? -1 : -1 : 0);
+	blockPlacement[static_cast<int>(pos.x)][static_cast<int>(pos.y)][static_cast<int>(pos.z)].SetData(0);
 }
 
 // ブロックのデータを読み込む
@@ -99,13 +101,6 @@ void STAGE::Initialize(int startDifficulty) {
 	LoadBlockData();                        // ブロックのデータを読み込む
 	SetDataInBlock();                       // ブロックのデータを初期化
 	difficulty[0] = startDifficulty;        // ステージ開始時の難易度を設定
-	blockPlacement[1][1][4].SetData(1);
-	blockPlacement[3][1][4].SetData(-1);
-	blockPlacement[5][1][4].SetData(-2);
-	blockPlacement[7][1][4].SetData(2);
-	blockPlacement[1][1][6].SetData(-3);
-	blockPlacement[1][2][7].SetData(-3);
-	blockPlacement[1][3][8].SetData(-3);
 }
 
 // 指定した座標がステージの範囲内か判定
