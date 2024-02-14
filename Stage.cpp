@@ -12,31 +12,35 @@ BLOCK STAGE::blockPlacement[STAGE_WIDTH][STAGE_HEIGHT][STAGE_WIDTH];
 
 // ステージの生成
 void STAGE::Create() {
-	test_create_process.Initialize();
-	test_create_process.SetStageFunc();
-	createProcess.FuncProcess(1);
+	createProcess.Process();
 }
 
 // ステージの描画
 void STAGE::Render() {
 	func = &RenderFunc;
-	ProcessEverything(func);
+	ProcessEverything(func, 0);
 }
 
 // ブロックにデータをセット
-void STAGE::SetDataInBlock() {
-	func = &SetDataInBlockFunc;
-	ProcessEverything(func);
+void STAGE::SetBlock(int num) {
+	func = &SetBlockFunc;
+	ProcessEverything(func, num);
+}
+
+// ブロックにデータをセット(範囲)
+void STAGE::SetBlock_Range(VECTOR pos1, VECTOR pos2, int num) {
+	func = &SetBlockFunc;
+	ProcessRange(func, pos1, pos2, num);
 }
 
 // ステージの描画(関数ポインタで指定)
-void STAGE::RenderFunc(VECTOR pos) {
+void STAGE::RenderFunc(VECTOR pos, int num) {
 	blockPlacement[static_cast<int>(pos.x)][static_cast<int>(pos.y)][static_cast<int>(pos.z)].Render(pos);
 }
 
 // ブロックにデータをセット(関数ポインタで指定)
-void STAGE::SetDataInBlockFunc(VECTOR pos) {
-	blockPlacement[static_cast<int>(pos.x)][static_cast<int>(pos.y)][static_cast<int>(pos.z)].SetData(0);
+void STAGE::SetBlockFunc(VECTOR pos, int num) {
+	blockPlacement[static_cast<int>(pos.x)][static_cast<int>(pos.y)][static_cast<int>(pos.z)].SetData(num);
 }
 
 // ブロックのデータを読み込む
@@ -79,18 +83,35 @@ void STAGE::LoadBlockData() {
 	}
 }
 
-// 全てのブロックに対して処理を行う
-void STAGE::ProcessEverything(void (*func)(VECTOR pos)) {
+// 全てのブロックに対して一括処理を行う
+void STAGE::ProcessEverything(void (*func)(VECTOR pos, int num), int num) {
 	VECTOR pos;
 	for (int i = 0; i < STAGE_WIDTH; ++i) {
 		for (int j = 0; j < STAGE_HEIGHT; ++j) {
 			for (int k = 0; k < STAGE_WIDTH; ++k) {
-				pos.x = static_cast<float>(k);
+				pos.x = static_cast<float>(i);
 				pos.y = static_cast<float>(j);
-				pos.z = static_cast<float>(i);
+				pos.z = static_cast<float>(k);
 
 				// 引数で渡された処理
-				(func)(pos);
+				(func)(pos, num);
+			}
+		}
+	}
+}
+
+// 指定した範囲のブロックに対して一括処理を行う
+void STAGE::ProcessRange(void (*func)(VECTOR pos, int num), VECTOR pos1, VECTOR pos2, int num) {
+	VECTOR pos;
+	for (int i = static_cast<int>(round(pos1.x)); i <= static_cast<int>(round(pos2.x)); ++i) {
+		for (int j = static_cast<int>(round(pos1.y)); j <= static_cast<int>(round(pos2.y)); ++j) {
+			for (int k = static_cast<int>(round(pos1.z)); k <= static_cast<int>(round(pos2.z)); ++k) {
+				pos.x = static_cast<float>(i);
+				pos.y = static_cast<float>(j);
+				pos.z = static_cast<float>(k);
+
+				// 引数で渡された処理
+				(func)(pos, num);
 			}
 		}
 	}
@@ -99,7 +120,7 @@ void STAGE::ProcessEverything(void (*func)(VECTOR pos)) {
 // ステージの初期化
 void STAGE::Initialize(int startDifficulty) {
 	LoadBlockData();                        // ブロックのデータを読み込む
-	SetDataInBlock();                       // ブロックのデータを初期化
+	SetBlock(0);                            // ブロックのデータを初期化
 	difficulty[0] = startDifficulty;        // ステージ開始時の難易度を設定
 }
 

@@ -6,6 +6,16 @@
 // ブロックのデータを代入する
 void BLOCK::SetData(int num) {
 
+	// すでにモデルが生成済みなら
+	if (modelHandle != -1) {
+
+		// モデルを削除
+		MV1DeleteModel(modelHandle);
+
+		// モデル全体のコリジョン情報のセットアップ
+		MV1SetupCollInfo(modelHandle, -1);
+	}
+
 	// ブロックIDから自分のブロックのデータを探す
 	int i = 0;
 	while (num != loadedBlockData.loadedId[i])

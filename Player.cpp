@@ -8,7 +8,7 @@ PLAYER player;
 void PLAYER::Initialize() {
 
 	// À•W‚ğİ’è
-	position = VGet(0.0f, 1.0f, 0.0f);
+	position = VGet(4.5f, 2.0f, 4.5f);
 
 	// ƒ‚ƒfƒ‹“Ç‚İ‚İ
 	modelHandle = MV1LoadModel("BlockModel/Player.mv1");
