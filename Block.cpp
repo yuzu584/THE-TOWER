@@ -74,4 +74,5 @@ int BLOCK::GetDirection() {
 // ブロックの向きを指定
 void BLOCK::SetDirection(int num) {
 	direction = num;
+	MV1SetRotationXYZ(modelHandle, BLOCK_DIRECTION[num]);
 }

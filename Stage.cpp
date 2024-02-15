@@ -21,16 +21,30 @@ void STAGE::Render() {
 	ProcessEverything(func, 0);
 }
 
-// ブロックにデータをセット
+// ブロックにデータをセット(全て)
 void STAGE::SetBlock(int num) {
 	func = &SetBlockFunc;
 	ProcessEverything(func, num);
 }
 
+// ブロックにデータをセット
+void STAGE::SetBlock(VECTOR pos, int num) {
+
+	// 指定した座標がステージの範囲内ならブロックを配置
+	if (CheckPos(pos)) {
+		blockPlacement[static_cast<int>(pos.x)][static_cast<int>(pos.y)][static_cast<int>(pos.z)].SetData(num);
+	}
+
+}
+
 // ブロックにデータをセット(範囲)
-void STAGE::SetBlock_Range(VECTOR pos1, VECTOR pos2, int num) {
-	func = &SetBlockFunc;
-	ProcessRange(func, pos1, pos2, num);
+void STAGE::SetBlock(VECTOR pos1, VECTOR pos2, int num) {
+
+	// 指定した座標がステージの範囲内ならブロックを配置
+	if (CheckPos(pos1, pos2)) {
+		func = &SetBlockFunc;
+		ProcessRange(func, pos1, pos2, num);
+	}
 }
 
 // ステージの描画(関数ポインタで指定)
@@ -102,16 +116,29 @@ void STAGE::ProcessEverything(void (*func)(VECTOR pos, int num), int num) {
 
 // 指定した範囲のブロックに対して一括処理を行う
 void STAGE::ProcessRange(void (*func)(VECTOR pos, int num), VECTOR pos1, VECTOR pos2, int num) {
-	VECTOR pos;
-	for (int i = static_cast<int>(round(pos1.x)); i <= static_cast<int>(round(pos2.x)); ++i) {
-		for (int j = static_cast<int>(round(pos1.y)); j <= static_cast<int>(round(pos2.y)); ++j) {
-			for (int k = static_cast<int>(round(pos1.z)); k <= static_cast<int>(round(pos2.z)); ++k) {
-				pos.x = static_cast<float>(i);
-				pos.y = static_cast<float>(j);
-				pos.z = static_cast<float>(k);
+	VECTOR Pos;
+	VECTOR Pos1;
+	VECTOR Pos2;
+
+	// 渡された2つのVECTORの引数どちらが大きいかで分岐
+	if (VSize(pos1) <= VSize(pos2)) {
+		Pos1 = pos1;
+		Pos2 = pos2;
+	}
+	else {
+		Pos1 = pos2;
+		Pos2 = pos1;
+	}
+
+	for (int i = static_cast<int>(round(Pos1.x)); i <= static_cast<int>(round(Pos2.x)); ++i) {
+		for (int j = static_cast<int>(round(Pos1.y)); j <= static_cast<int>(round(Pos2.y)); ++j) {
+			for (int k = static_cast<int>(round(Pos1.z)); k <= static_cast<int>(round(Pos2.z)); ++k) {
+				Pos.x = static_cast<float>(i);
+				Pos.y = static_cast<float>(j);
+				Pos.z = static_cast<float>(k);
 
 				// 引数で渡された処理
-				(func)(pos, num);
+				(func)(Pos, num);
 			}
 		}
 	}
@@ -134,6 +161,39 @@ bool STAGE::CheckPos(VECTOR pos) {
 		(pos.z < STAGE_WIDTH));
 }
 
+// 指定した座標がステージの範囲内か判定(範囲)
+bool STAGE::CheckPos(VECTOR pos1, VECTOR pos2) {
+	VECTOR Pos;
+	VECTOR Pos1;
+	VECTOR Pos2;
+
+	// 渡された2つのVECTORの引数どちらが大きいかで分岐
+	if (VSize(pos1) <= VSize(pos2)) {
+		Pos1 = pos1;
+		Pos2 = pos2;
+	}
+	else {
+		Pos1 = pos2;
+		Pos2 = pos1;
+	}
+
+	for (int i = static_cast<int>(round(Pos1.x)); i <= static_cast<int>(round(Pos2.x)); ++i) {
+		for (int j = static_cast<int>(round(Pos1.y)); j <= static_cast<int>(round(Pos2.y)); ++j) {
+			for (int k = static_cast<int>(round(Pos1.z)); k <= static_cast<int>(round(Pos2.z)); ++k) {
+				Pos.x = static_cast<float>(i);
+				Pos.y = static_cast<float>(j);
+				Pos.z = static_cast<float>(k);
+
+				// 指定した座標がステージの範囲内か判定
+				if (!CheckPos(Pos))
+					return false;
+			}
+		}
+	}
+
+	return true;
+}
+
 // コンストラクタ
 STAGE::STAGE() {
 
@@ -148,10 +208,4 @@ BLOCK STAGE::GetBlockPlacement(VECTOR pos) {
 void STAGE::InitBlockPlacement(VECTOR pos) {
 
 	blockPlacement[static_cast<int>(pos.x)][static_cast<int>(pos.y)][static_cast<int>(pos.z)].SetData(0);
-}
-
-// 指定した箇所のブロックのデータを設定
-void STAGE::SetBlockPlacement(VECTOR pos, int num) {
-
-	blockPlacement[static_cast<int>(pos.x)][static_cast<int>(pos.y)][static_cast<int>(pos.z)].SetData(num);
 }
