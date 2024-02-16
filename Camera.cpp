@@ -1,5 +1,6 @@
 #include "Camera.h"
 #include "Input.h"
+#include "Player.h"
 
 #include <math.h>
 

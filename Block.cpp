@@ -57,7 +57,8 @@ void BLOCK::SetData(int num, int dir) {
 	modelHandle = MV1DuplicateModel(loadedBlockData.loadedModelHandle[i]);
 
 	// 向きを設定
-	SetDirection(dir);
+	if(dir != -1)
+		SetDirection(dir);
 }
 
 // ブロックのモデルを描画

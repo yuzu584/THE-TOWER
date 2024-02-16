@@ -1,6 +1,6 @@
 #include <stdio.h>
-#include <time.h>
 #include <windows.h>
+#include <algorithm>
 #include "StageCreate.h"
 
 CREATE_PROCESS createProcess;
@@ -55,6 +55,23 @@ int CREATE_PROCESS::GetRandDir(bool reverse) {
 	return randDir;
 }
 
+// ステージ生成処理を行う位置の数値を範囲内に収める
+void CREATE_PROCESS::ClampCreationPos() {
+	if (creationPos.x < 0)
+		creationPos.x = 0;
+	if (creationPos.y < 0)
+		creationPos.y = 0;
+	if (creationPos.z < 0)
+		creationPos.z = 0;
+
+	if (creationPos.x > STAGE_WIDTH - 1)
+		creationPos.x = STAGE_WIDTH - 1;
+	if (creationPos.y > STAGE_HEIGHT - 1)
+		creationPos.y = STAGE_HEIGHT - 1;
+	if (creationPos.z > STAGE_WIDTH - 1)
+		creationPos.z = STAGE_WIDTH - 1;
+}
+
 // 向きをランダムで指定(4方向)
 void CREATE_PROCESS::SetRandDir() {
 
@@ -63,11 +80,14 @@ void CREATE_PROCESS::SetRandDir() {
 		// 0～4の乱数を生成
 		randDir = Random(4);
 
-		// 前回の向きと同じならやり直し
-		if (randDir == oldDir) {
+		// 前回の向きの反対の向き又は前回と同じ向きならやり直し
+		int reverseOldDir = oldDir += 2;
+		if (reverseOldDir >= 4) {
+			reverseOldDir -= 4;
+		}
+		if ((randDir == reverseOldDir) || (randDir == oldDir)) {
 			continue;
 		}
-		oldDir = randDir;
 
 		// 生成した乱数によって分岐
 		switch (randDir)
@@ -87,6 +107,10 @@ void CREATE_PROCESS::SetRandDir() {
 		default:
 			break;
 		}
+
+		// 指定した向きのブロックがステージの範囲外ならやり直し
+		if (!stage.CheckPos(VAdd(creationPos, creationDir)))
+			continue;
 
 		break;
 	}
@@ -119,7 +143,7 @@ void TEST_CREATE_PROCESS::StartFloor() {
 		for (int j = 0; j < STAGE_WIDTH; ++j) {
 			pos.x = static_cast<float>(i);
 			pos.z = static_cast<float>(j);
-			stage.SetBlock(pos, 2, createProcess.GetRandDir(true));
+			stage.SetBlock(pos, 2, -1);
 		}
 	}
 }
@@ -134,29 +158,34 @@ void TEST_CREATE_PROCESS::OneLoad() {
 	pos = createProcess.GetCreationPos();
 	dir = createProcess.GetCreationDir();
 
+	// 生成するブロックの長さを乱数で決定
+	int createCount = createProcess.Random(3, 3);
+
 	// 一段上がるか乱数で決定
 	if (createProcess.Random(16) < 8) {
 		pos->y += 1;
+		createProcess.ClampCreationPos();
 		stage.SetBlock(*pos, -2, createProcess.GetRandDir(true));
+		createProcess.SetOldDir();
 		*pos = VAdd(*pos, *dir);
+		createProcess.ClampCreationPos();
+		createCount -= 1;
 	}
 
 	// ステージ生成
-	stage.SetBlock(*pos, VAdd(*pos, VScale(*dir, 3.0f)), 1, createProcess.GetRandDir(true));
-	*pos = VAdd(*pos, VScale(*dir, 3.0f));
+	stage.SetBlock(*pos, VAdd(*pos, VScale(*dir, static_cast<float>(createCount))), 1, -1);
+	createProcess.SetOldDir();
+	*pos = VAdd(*pos, VScale(*dir, static_cast<float>(createCount)));
+	createProcess.ClampCreationPos();
+	createCount = 0;
 }
 
 // 道幅2マスの一本道を生成
 void TEST_CREATE_PROCESS::OnrLoad_2Squares() {
-	pos = createProcess.GetCreationPos();
-	dir = createProcess.GetCreationDir();
-	stage.SetBlock(*pos, VAdd(*pos, VGet(1.0f, 0.0f, 5.0f)), 1, createProcess.GetRandDir(true));
+
 }
 
 // 正方形の床を生成
 void TEST_CREATE_PROCESS::Floor() {
-	pos = createProcess.GetCreationPos();
-	dir = createProcess.GetCreationDir();
-	int width = createProcess.Random(5);
-	stage.SetBlock(*pos, VAdd(*pos, VGet(static_cast<float>(width), 0.0f, static_cast<float>(width))), 1, createProcess.GetRandDir(true));
+
 }

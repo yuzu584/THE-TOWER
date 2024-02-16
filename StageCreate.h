@@ -17,7 +17,9 @@ public:
 	void SetFunc(void (*newfunc)(), int);		              // 関数ポインタをセット
 	int Random(int num);                                      // ミリ秒単位で乱数を生成
 	int Random(int num, int offset);                          // ミリ秒単位で乱数を生成(オフセットで数値をずらす)
+	void ClampCreationPos();                                  // ステージ生成処理を行う位置の数値を範囲内に収める
 	void SetRandDir();                                        // 向きをランダムで指定(4方向)
+	void SetOldDir() { oldDir = randDir; }                    // 前回のステージ生成処理を行う向きの番号をセット
 	int GetRandDir(bool reverse);                             // ステージ生成処理を行う向きの番号を取得(reverse true : 向きを反転した数値 false : そのままの数値)
 	VECTOR* GetCreationPos() { return &creationPos; }         // ステージ生成処理を行う位置を取得
 	VECTOR* GetCreationDir() { return &creationDir; }         // ステージ生成処理を行う向きを取得

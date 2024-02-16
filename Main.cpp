@@ -26,7 +26,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	SetBackgroundColor(128, 128, 128);
 
 	stage.Initialize(0);
-	stage.Create();
+
 	player.Initialize();
 
 	// 標準ライトの方向をY軸のマイナス方向にする
@@ -40,7 +40,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 		// 画面をクリア
 		ClearDrawScreen();
-
+		stage.Create();
 		// 入力処理
 		input.Process();
 
