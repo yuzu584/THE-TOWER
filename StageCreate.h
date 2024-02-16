@@ -9,13 +9,16 @@ private:
 	void (*func[PROCESS_TYPE_AMOUNT])();                      // 実行するステージ生成処理の関数ポインタ配列
 	VECTOR creationPos = { 3.0f, 0.0f, 3.0f };                // ステージ生成処理を行う位置
 	VECTOR creationDir = { 1.0f, 0.0f, 0.0f };                // ステージ生成処理を行う向き
+	int randDir;                                              // ステージ生成処理を行う向きの番号
+	int oldDir;                                               // 前回のステージ生成処理を行う向きの番号
 public:
 	void Process();                                           // ステージ生成処理
 	void FuncProcess(int num) { (*func[num])(); }             // 指定した関数ポインタ配列の関数を実行
 	void SetFunc(void (*newfunc)(), int);		              // 関数ポインタをセット
-	int Random(int num);                                      // 乱数を生成
-	int Random(int num, int offset);                          // 乱数を生成(オフセットで数値をずらす)
+	int Random(int num);                                      // ミリ秒単位で乱数を生成
+	int Random(int num, int offset);                          // ミリ秒単位で乱数を生成(オフセットで数値をずらす)
 	void SetRandDir();                                        // 向きをランダムで指定(4方向)
+	int GetRandDir(bool reverse);                             // ステージ生成処理を行う向きの番号を取得(reverse true : 向きを反転した数値 false : そのままの数値)
 	VECTOR* GetCreationPos() { return &creationPos; }         // ステージ生成処理を行う位置を取得
 	VECTOR* GetCreationDir() { return &creationDir; }         // ステージ生成処理を行う向きを取得
 };

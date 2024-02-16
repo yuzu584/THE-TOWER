@@ -29,18 +29,18 @@ class STAGE {
 private:
 	static BLOCK blockPlacement[STAGE_WIDTH][STAGE_HEIGHT][STAGE_WIDTH];             // ブロックの配置
 	int difficulty[STAGE_HEIGHT / STAGE_DIFFICULTY_SPACE];                           // ステージの難易度
-	void (*func)(VECTOR, int);                                                       // 戻り値のない関数ポインタの定義
-	static void RenderFunc(VECTOR pos, int num);                                     // ステージの描画(関数ポインタで指定)
-	static void SetBlockFunc(VECTOR pos, int num);                                   // ブロックにデータをセット(関数ポインタで指定)
+	void (*func)(VECTOR, int, int);                                                  // 戻り値のない関数ポインタの定義
+	static void RenderFunc(VECTOR pos, int num, int dir);                            // ステージの描画(関数ポインタで指定)
+	static void SetBlockFunc(VECTOR pos, int num, int dir);                          // ブロックにデータをセット(関数ポインタで指定)
 public:
 	void Create();                                                                   // ステージの生成
 	void Render();                                                                   // ステージの描画
-	void SetBlock(int num);                                                          // ブロックをセット(全て)
-	void SetBlock(VECTOR pos, int num);                                              // ブロックをセット
-	void SetBlock(VECTOR pos1, VECTOR pos2, int num);                                // ブロックをセット(範囲)
+	void SetBlock(int num, int dir);                                                 // ブロックをセット(全て)
+	void SetBlock(VECTOR pos, int num, int dir);                                     // ブロックをセット
+	void SetBlock(VECTOR pos1, VECTOR pos2, int num, int dir);                       // ブロックをセット(範囲)
 	void LoadBlockData();                                                            // ブロックのデータを読み込む
-	void ProcessEverything(void (*func)(VECTOR, int), int num);                      // 全てのブロックに対して一括処理を行う
-	void ProcessRange(void (*func)(VECTOR, int), VECTOR pos1, VECTOR pos2, int num); // 指定した範囲のブロックに対して一括処理を行う
+	void ProcessEverything(void (*func)(VECTOR, int, int), int num, int dir);                      // 全てのブロックに対して一括処理を行う
+	void ProcessRange(void (*func)(VECTOR, int, int), VECTOR pos1, VECTOR pos2, int num, int dir); // 指定した範囲のブロックに対して一括処理を行う
 	void Initialize(int startDifficulty);											 // ステージの初期化
 	bool CheckPos(VECTOR pos);                                                       // 指定した座標がステージの範囲内か判定
 	bool CheckPos(VECTOR pos1, VECTOR pos2);                                         // 指定した座標がステージの範囲内か判定(範囲)

@@ -20,9 +20,10 @@ private:
 	int direction = 0;            // 向き(0:右 1:前 2:左 3:後ろ)
 	int modelHandle = 0;          // モデルハンドル
 public:
-	void SetData(int num);   // ブロックのデータを代入する
-	void Render(VECTOR pos); // ブロックのモデルを描画
-	void Initialize(); // ブロックを初期化
+	void SetData(int num);            // ブロックのデータを代入する
+	void SetData(int num, int dir);   // ブロックのデータと向きを代入する
+	void Render(VECTOR pos);          // ブロックのモデルを描画
+	void Initialize();                // ブロックを初期化
 
 	BLOCK();
 

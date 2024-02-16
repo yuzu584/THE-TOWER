@@ -30,6 +30,36 @@ void BLOCK::SetData(int num) {
 	modelHandle = MV1DuplicateModel(loadedBlockData.loadedModelHandle[i]);
 }
 
+// ブロックのデータと向きを代入する
+void BLOCK::SetData(int num, int dir) {
+
+	// すでにモデルが生成済みなら
+	if (modelHandle != -1) {
+
+		// モデルを削除
+		MV1DeleteModel(modelHandle);
+
+		// モデル全体のコリジョン情報のセットアップ
+		MV1SetupCollInfo(modelHandle, -1);
+	}
+
+	// ブロックIDから自分のブロックのデータを探す
+	int i = 0;
+	while (num != loadedBlockData.loadedId[i])
+	{
+		if (i >= BLOCK_TYPE_AMOUNT - 1) { break; }
+		++i;
+	}
+
+	// 探したブロックIDのデータを代入
+	id = loadedBlockData.loadedId[i];
+	name = loadedBlockData.loadedName[i];
+	modelHandle = MV1DuplicateModel(loadedBlockData.loadedModelHandle[i]);
+
+	// 向きを設定
+	SetDirection(dir);
+}
+
 // ブロックのモデルを描画
 void BLOCK::Render(VECTOR pos) {
 	if (modelHandle != -1) {
