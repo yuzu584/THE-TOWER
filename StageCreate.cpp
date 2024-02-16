@@ -112,6 +112,8 @@ void CREATE_PROCESS::SetRandDir() {
 		if (!stage.CheckPos(VAdd(creationPos, creationDir)))
 			continue;
 
+		oldDir = randDir;
+
 		break;
 	}
 }
@@ -163,18 +165,16 @@ void TEST_CREATE_PROCESS::OneLoad() {
 
 	// 一段上がるか乱数で決定
 	if (createProcess.Random(16) < 8) {
-		pos->y += 1;
+		++pos->y;
 		createProcess.ClampCreationPos();
 		stage.SetBlock(*pos, -2, createProcess.GetRandDir(true));
-		createProcess.SetOldDir();
 		*pos = VAdd(*pos, *dir);
 		createProcess.ClampCreationPos();
-		createCount -= 1;
+		--createCount;
 	}
 
 	// ステージ生成
 	stage.SetBlock(*pos, VAdd(*pos, VScale(*dir, static_cast<float>(createCount))), 1, -1);
-	createProcess.SetOldDir();
 	*pos = VAdd(*pos, VScale(*dir, static_cast<float>(createCount)));
 	createProcess.ClampCreationPos();
 	createCount = 0;

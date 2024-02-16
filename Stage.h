@@ -44,6 +44,7 @@ public:
 	void Initialize(int startDifficulty);											 // ステージの初期化
 	bool CheckPos(VECTOR pos);                                                       // 指定した座標がステージの範囲内か判定
 	bool CheckPos(VECTOR pos1, VECTOR pos2);                                         // 指定した座標がステージの範囲内か判定(範囲)
+	bool CheckBlock(VECTOR pos);                                                     // 指定した座標にブロックが存在するか判定
 
 	STAGE();
 

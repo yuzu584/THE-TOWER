@@ -193,6 +193,15 @@ bool STAGE::CheckPos(VECTOR pos1, VECTOR pos2) {
 	return true;
 }
 
+// 指定した座標にブロックが存在するか判定
+bool STAGE::CheckBlock(VECTOR pos) {
+
+	// 指定の座標のブロックのモデルハンドルを取得して、空気ブロック以外なら存在する判定にする
+	int modelHandle = GetBlockPlacement(pos).GetModelHandle();
+
+	return modelHandle == -1;
+}
+
 // コンストラクタ
 STAGE::STAGE() {
 
