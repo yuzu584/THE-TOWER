@@ -1,6 +1,4 @@
 #include <stdio.h>
-#include <windows.h>
-#include <algorithm>
 #include "StageCreate.h"
 
 CREATE_PROCESS createProcess;
@@ -16,28 +14,12 @@ void CREATE_PROCESS::Process() {
 
 	// 現在時刻をもとに初期化して乱数を生成し、
 	// ランダムなステージ生成処理を行う
-	FuncProcess(Random(1));
+	FuncProcess(rand() % 1);
 }
 
 // 関数ポインタにセット
 void CREATE_PROCESS::SetFunc(void (*newFunc)(), int num) {
 	func[num] = newFunc;
-}
-
-// ミリ秒単位で乱数を生成
-int CREATE_PROCESS::Random(int num) {
-	SYSTEMTIME tm;
-	GetLocalTime(&tm);
-	srand(tm.wMilliseconds);
-	return (rand() % num);
-}
-
-// ミリ秒単位で乱数を生成(オフセットで数値をずらす)
-int CREATE_PROCESS::Random(int num, int offset) {
-	SYSTEMTIME tm;
-    GetLocalTime(&tm);
-	srand(tm.wMilliseconds);
-	return ((rand() % num) + offset);
 }
 
 // ステージ生成処理を行う向きの番号を取得(reverse true : 向きを反転した数値 false : そのままの数値)
@@ -78,11 +60,11 @@ void CREATE_PROCESS::SetRandDir() {
 	while (true)
 	{
 		// 0～4の乱数を生成
-		randDir = Random(4);
+		randDir = rand() % 4;
 
 		// 前回の向きの反対の向き又は前回と同じ向きならやり直し
 		int reverseOldDir = oldDir += 2;
-		if (reverseOldDir >= 4) {
+		if (reverseOldDir > 3) {
 			reverseOldDir -= 4;
 		}
 		if ((randDir == reverseOldDir) || (randDir == oldDir)) {
@@ -112,8 +94,6 @@ void CREATE_PROCESS::SetRandDir() {
 		if (!stage.CheckPos(VAdd(creationPos, creationDir)))
 			continue;
 
-		oldDir = randDir;
-
 		break;
 	}
 }
@@ -130,11 +110,24 @@ void TEST_CREATE_PROCESS::SetStageFunc() {
 // ステージ初期化
 void TEST_CREATE_PROCESS::Initialize() {
 
+	// ステージ生成の位置と向きを取得
+	pos = createProcess.GetCreationPos();
+	dir = createProcess.GetCreationDir();
+
 	// ステージ開始時の床を生成
 	StartFloor();
 
 	// このステージで使用するステージ生成処理の関数ポインタ配列に、ステージ生成処理の関数ポインタをセット
 	SetStageFunc();
+
+#if 0
+	// 最初の階段を設置
+	++pos->y;
+	createProcess.ClampCreationPos();
+	stage.SetBlock(*pos, -2, createProcess.GetRandDir(true));
+	*pos = VAdd(*pos, *dir);
+	createProcess.ClampCreationPos();
+#endif // 0
 }
 
 // ステージ開始時の床を生成
@@ -156,15 +149,26 @@ void TEST_CREATE_PROCESS::OneLoad() {
 	// ステージ生成の向きをランダムに変更
 	createProcess.SetRandDir();
 
-	// ステージ生成の位置と向きを取得
-	pos = createProcess.GetCreationPos();
-	dir = createProcess.GetCreationDir();
+	int createCount = 0;
 
-	// 生成するブロックの長さを乱数で決定
-	int createCount = createProcess.Random(3, 3);
+	// ステージの端までの距離を数える
+	while (true) {
+		if (stage.CheckPos(VAdd(*pos, VScale(*dir, static_cast<float>(createCount))))) {
+			++createCount;
+		}
+		else
+			break;
+	}
 
-	// 一段上がるか乱数で決定
-	if (createProcess.Random(16) < 8) {
+	// 生成するブロックの長さを決定
+	if (createCount > 7)
+		createCount = 7;
+	createCount = rand() % createCount + 1;
+
+	// 一段上がるか乱数で決定、乱数が外れても設置位置の下にブロックがあれば一段上がる
+	if ((rand() % 16 < 4) || (!stage.CheckBlock(VAdd(*pos, VGet(0.0f, -1.0f, 0.0f))))) {
+
+		// 一段上げる処理
 		++pos->y;
 		createProcess.ClampCreationPos();
 		stage.SetBlock(*pos, -2, createProcess.GetRandDir(true));

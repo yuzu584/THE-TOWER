@@ -33,6 +33,7 @@ private:
 	static void RenderFunc(VECTOR pos, int num, int dir);                            // ステージの描画(関数ポインタで指定)
 	static void SetBlockFunc(VECTOR pos, int num, int dir);                          // ブロックにデータをセット(関数ポインタで指定)
 public:
+	void Process();                                                                  // ステージの処理
 	void Create();                                                                   // ステージの生成
 	void Render();                                                                   // ステージの描画
 	void SetBlock(int num, int dir);                                                 // ブロックをセット(全て)

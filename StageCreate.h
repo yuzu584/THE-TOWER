@@ -10,13 +10,11 @@ private:
 	VECTOR creationPos = { 3.0f, 0.0f, 3.0f };                // ステージ生成処理を行う位置
 	VECTOR creationDir = { 1.0f, 0.0f, 0.0f };                // ステージ生成処理を行う向き
 	int randDir;                                              // ステージ生成処理を行う向きの番号
-	int oldDir;                                               // 前回のステージ生成処理を行う向きの番号
+	int oldDir = 1;                                           // 前回のステージ生成処理を行う向きの番号
 public:
 	void Process();                                           // ステージ生成処理
 	void FuncProcess(int num) { (*func[num])(); }             // 指定した関数ポインタ配列の関数を実行
 	void SetFunc(void (*newfunc)(), int);		              // 関数ポインタをセット
-	int Random(int num);                                      // ミリ秒単位で乱数を生成
-	int Random(int num, int offset);                          // ミリ秒単位で乱数を生成(オフセットで数値をずらす)
 	void ClampCreationPos();                                  // ステージ生成処理を行う位置の数値を範囲内に収める
 	void SetRandDir();                                        // 向きをランダムで指定(4方向)
 	void SetOldDir() { oldDir = randDir; }                    // 前回のステージ生成処理を行う向きの番号をセット

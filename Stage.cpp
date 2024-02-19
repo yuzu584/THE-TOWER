@@ -1,5 +1,6 @@
 #include "Stage.h"
 #include "StageCreate.h"
+#include "Player.h"
 
 #include <fstream>
 
@@ -9,6 +10,19 @@ STAGE stage;
 LoadedBlockData loadedBlockData;
 
 BLOCK STAGE::blockPlacement[STAGE_WIDTH][STAGE_HEIGHT][STAGE_WIDTH];
+
+// ステージの処理
+void STAGE::Process() {
+	
+	// ステージを生成
+	while (player.GetPosition().y + 5.0f > createProcess.GetCreationPos()->y)
+	{
+		Create();
+	}
+
+	// ステージの描画
+	Render();
+}
 
 // ステージの生成
 void STAGE::Create() {
@@ -32,9 +46,9 @@ void STAGE::SetBlock(VECTOR pos, int num, int dir) {
 
 	// 指定した座標がステージの範囲内ならブロックを配置
 	if (CheckPos(pos)) {
+		createProcess.SetOldDir();
 		blockPlacement[static_cast<int>(pos.x)][static_cast<int>(pos.y)][static_cast<int>(pos.z)].SetData(num, dir);
 	}
-
 }
 
 // ブロックにデータをセット(範囲)
@@ -52,7 +66,12 @@ void STAGE::RenderFunc(VECTOR pos, int num, int dir) {
 
 // ブロックにデータをセット(関数ポインタで指定)
 void STAGE::SetBlockFunc(VECTOR pos, int num, int dir) {
-	blockPlacement[static_cast<int>(pos.x)][static_cast<int>(pos.y)][static_cast<int>(pos.z)].SetData(num, dir);
+
+	// 指定した座標がステージの範囲内ならブロックを配置
+	if (stage.CheckPos(pos)) {
+		createProcess.SetOldDir();
+		blockPlacement[static_cast<int>(pos.x)][static_cast<int>(pos.y)][static_cast<int>(pos.z)].SetData(num, dir);
+	}
 }
 
 // ブロックのデータを読み込む
@@ -197,9 +216,11 @@ bool STAGE::CheckPos(VECTOR pos1, VECTOR pos2) {
 bool STAGE::CheckBlock(VECTOR pos) {
 
 	// 指定の座標のブロックのモデルハンドルを取得して、空気ブロック以外なら存在する判定にする
-	int modelHandle = GetBlockPlacement(pos).GetModelHandle();
+	int id = 0;
+	if(CheckPos(pos))
+		id = GetBlockPlacement(pos).GetId();
 
-	return modelHandle == -1;
+	return id == 0; // 0 は空気ブロックのID
 }
 
 // コンストラクタ

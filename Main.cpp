@@ -4,6 +4,8 @@
 #include "Camera.h"
 #include "Player.h"
 #include "StageCreate.h"
+#include <windows.h>
+#include <algorithm>
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
@@ -32,6 +34,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	// 標準ライトの方向をY軸のマイナス方向にする
 	SetLightDirection(VGet(0.5f, -1.0f, 0.5f));
 
+	// 乱数をミリ秒単位で生成
+	SYSTEMTIME tm;
+	GetLocalTime(&tm);
+	srand(tm.wMilliseconds);
+
 	// ESCキーが押されるか、ウインドウが閉じられるまでループ
 	while (ProcessMessage() == 0 && CheckHitKey(KEY_INPUT_ESCAPE) == 0)
 	{
@@ -40,7 +47,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 		// 画面をクリア
 		ClearDrawScreen();
-		stage.Create();
+		
 		// 入力処理
 		input.Process();
 
@@ -48,7 +55,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		camera.Process();
 
 		// ステージを描画
-		stage.Render();
+		stage.Process();
 
 		// プレイヤーの処理
 		player.Process();
