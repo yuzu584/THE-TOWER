@@ -2,8 +2,11 @@
 
 #include "Stage.h"
 
+#define RAISE_UP_RATE 16 < 8           // ステージ生成の際に一段上がる確率
+
 constexpr int PROCESS_TYPE_AMOUNT = 5; // ステージごとの生成プロセスの数
 
+// ステージ生成に関する処理のクラス
 class CREATE_PROCESS {
 private:
 	void (*func[PROCESS_TYPE_AMOUNT])();                      // 実行するステージ生成処理の関数ポインタ配列
@@ -34,7 +37,9 @@ public:
 	void StartFloor();                                        // ステージ開始時の床を生成
 	static void OneLoad();                                    // 一本道を生成
 	static void OnrLoad_2Squares();                           // 道幅2マスの一本道を生成
+	static void HolesOneLoad();                               // 穴の開いた一本道を生成
 	static void Floor();                                      // 正方形の床を生成
+	static void FloatingFloor();                              // 他の足場から切り離された独立した床を生成
 };
 
 extern CREATE_PROCESS createProcess;

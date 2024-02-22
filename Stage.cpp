@@ -14,10 +14,13 @@ BLOCK STAGE::blockPlacement[STAGE_WIDTH][STAGE_HEIGHT][STAGE_WIDTH];
 // ステージの処理
 void STAGE::Process() {
 	
-	// ステージを生成
-	while (player.GetPosition().y + 5.0f > createProcess.GetCreationPos()->y)
-	{
-		Create();
+	// ステージ生成位置がステージの限界高度に達していなければステージを生成
+	if (createProcess.GetCreationPos()->y < STAGE_HEIGHT) {
+
+		while (player.GetPosition().y + STAGE_CREATE_HEIGHT_TO_PLAYER > createProcess.GetCreationPos()->y)
+		{
+			Create();
+		}
 	}
 
 	// ステージの描画

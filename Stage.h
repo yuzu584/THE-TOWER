@@ -6,6 +6,7 @@ constexpr int STAGE_WIDTH = 10;                                                 
 constexpr int STAGE_HEIGHT = 120;                                                 // ステージの高さ
 constexpr int STAGE_DIFFICULTY_SPACE = 30;                                        // 難易度が変わる間隔(y座標)
 constexpr float STAGE_WIDTH_CENTER = ((static_cast<float>(STAGE_WIDTH) - 1) / 2); // ステージの幅の中央
+constexpr float STAGE_CREATE_HEIGHT_TO_PLAYER = 3.0f;                             // ステージ生成の際にプレイヤーの位置から何ブロック高い位置を生成位置にするか
 
 // 読み込んだブロックのデータの構造体
 struct LoadedBlockData

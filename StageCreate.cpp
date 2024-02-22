@@ -12,7 +12,6 @@ void CREATE_PROCESS::Process() {
 	// ステージ初期化処理
 	test_create_process.Initialize();
 
-	// 現在時刻をもとに初期化して乱数を生成し、
 	// ランダムなステージ生成処理を行う
 	FuncProcess(rand() % 1);
 }
@@ -62,11 +61,13 @@ void CREATE_PROCESS::SetRandDir() {
 		// 0～4の乱数を生成
 		randDir = rand() % 4;
 
-		// 前回の向きの反対の向き又は前回と同じ向きならやり直し
-		int reverseOldDir = oldDir += 2;
+		// 前回の向きの反対の向きを求める
+		int reverseOldDir = (oldDir + 2);
 		if (reverseOldDir > 3) {
 			reverseOldDir -= 4;
 		}
+
+		// 前回の向きの反対の向き又は前回と同じ向きならやり直し
 		if ((randDir == reverseOldDir) || (randDir == oldDir)) {
 			continue;
 		}
@@ -145,42 +146,66 @@ void TEST_CREATE_PROCESS::StartFloor() {
 
 // 一本道を生成
 void TEST_CREATE_PROCESS::OneLoad() {
-
-	// ステージ生成の向きをランダムに変更
-	createProcess.SetRandDir();
-
+	
 	int createCount = 0;
 
-	// ステージの端までの距離を数える
-	while (true) {
-		if (stage.CheckPos(VAdd(*pos, VScale(*dir, static_cast<float>(createCount))))) {
-			++createCount;
+	// ステージ生成処理が正常に行える準備が整うまで繰り返す
+	while (true)
+	{
+		// ステージ生成の向きをランダムに変更
+		createProcess.SetRandDir();
+
+		// ステージの端までの距離を数える
+		while (true) {
+			if (stage.CheckPos(VAdd(*pos, VScale(*dir, static_cast<float>(createCount + 1))))) {
+				++createCount;
+			}
+			else
+				break;
 		}
-		else
+
+		// 端までの距離が0ブロックならやり直し
+		if (createCount == 0) {
+			createCount = 0;
+			continue;
+		}
+		// 端までの距離が0ブロックより上なら抜ける
+		else if (createCount > 0)
 			break;
 	}
 
+	// 前回のブロック生成処理の向きを設定
+	createProcess.SetOldDir();
+
 	// 生成するブロックの長さを決定
-	if (createCount > 7)
-		createCount = 7;
 	createCount = rand() % createCount + 1;
 
 	// 一段上がるか乱数で決定、乱数が外れても設置位置の下にブロックがあれば一段上がる
-	if ((rand() % 16 < 4) || (!stage.CheckBlock(VAdd(*pos, VGet(0.0f, -1.0f, 0.0f))))) {
+	if ((rand() % RAISE_UP_RATE) || (!stage.CheckBlock(VAdd(*pos, VGet(0.0f, -1.0f, 0.0f))))) {
 
 		// 一段上げる処理
 		++pos->y;
-		createProcess.ClampCreationPos();
 		stage.SetBlock(*pos, -2, createProcess.GetRandDir(true));
 		*pos = VAdd(*pos, *dir);
-		createProcess.ClampCreationPos();
 		--createCount;
 	}
 
 	// ステージ生成
-	stage.SetBlock(*pos, VAdd(*pos, VScale(*dir, static_cast<float>(createCount))), 1, -1);
-	*pos = VAdd(*pos, VScale(*dir, static_cast<float>(createCount)));
-	createProcess.ClampCreationPos();
+	for (int i = 0; i < createCount; ++i) {
+
+		// 設置位置の下にブロックがあれば一段上がる
+		if (!stage.CheckBlock(VAdd(*pos, VGet(0.0f, -1.0f, 0.0f)))) {
+
+			// 一段上げる処理
+			++pos->y;
+			stage.SetBlock(*pos, -2, createProcess.GetRandDir(false));
+			*pos = VAdd(*pos, *dir);
+		}
+		else {
+			stage.SetBlock(*pos, 1, -1);
+			*pos = VAdd(*pos, *dir);
+		}
+	}
 	createCount = 0;
 }
 
@@ -189,7 +214,17 @@ void TEST_CREATE_PROCESS::OnrLoad_2Squares() {
 
 }
 
+// 穴の開いた一本道を生成
+void TEST_CREATE_PROCESS::HolesOneLoad() {
+
+}
+
 // 正方形の床を生成
 void TEST_CREATE_PROCESS::Floor() {
+
+}
+
+// 他の足場から切り離された独立した床を生成
+void TEST_CREATE_PROCESS::FloatingFloor() {
 
 }
