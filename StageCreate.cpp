@@ -148,6 +148,7 @@ void TEST_CREATE_PROCESS::StartFloor() {
 void TEST_CREATE_PROCESS::OneLoad() {
 	
 	int createCount = 0;
+	bool thisRaised = false; // 今回のプロセスで一段上がる処理が乱数で行われたか
 
 	// ステージ生成処理が正常に行える準備が整うまで繰り返す
 	while (true)
@@ -184,6 +185,7 @@ void TEST_CREATE_PROCESS::OneLoad() {
 	if ((rand() % RAISE_UP_RATE) || (!stage.CheckBlock(VAdd(*pos, VGet(0.0f, -1.0f, 0.0f))))) {
 
 		// 一段上げる処理
+		thisRaised = true;
 		++pos->y;
 		stage.SetBlock(*pos, -2, createProcess.GetRandDir(true));
 		*pos = VAdd(*pos, *dir);
@@ -198,7 +200,7 @@ void TEST_CREATE_PROCESS::OneLoad() {
 
 			// 一段上げる処理
 			++pos->y;
-			stage.SetBlock(*pos, -2, createProcess.GetRandDir(false));
+			stage.SetBlock(*pos, -2, createProcess.GetRandDir(!thisRaised));
 			*pos = VAdd(*pos, *dir);
 		}
 		else {

@@ -49,7 +49,6 @@ void STAGE::SetBlock(VECTOR pos, int num, int dir) {
 
 	// 指定した座標がステージの範囲内ならブロックを配置
 	if (CheckPos(pos)) {
-		createProcess.SetOldDir();
 		blockPlacement[static_cast<int>(pos.x)][static_cast<int>(pos.y)][static_cast<int>(pos.z)].SetData(num, dir);
 	}
 }
@@ -72,7 +71,6 @@ void STAGE::SetBlockFunc(VECTOR pos, int num, int dir) {
 
 	// 指定した座標がステージの範囲内ならブロックを配置
 	if (stage.CheckPos(pos)) {
-		createProcess.SetOldDir();
 		blockPlacement[static_cast<int>(pos.x)][static_cast<int>(pos.y)][static_cast<int>(pos.z)].SetData(num, dir);
 	}
 }
