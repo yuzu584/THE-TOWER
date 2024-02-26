@@ -3,8 +3,7 @@
 
 CREATE_PROCESS createProcess;
 TEST_CREATE_PROCESS test_create_process;
-VECTOR* TEST_CREATE_PROCESS::pos;
-VECTOR* TEST_CREATE_PROCESS::dir;
+int TEST_CREATE_PROCESS::createCount;
 
 // ステージ生成処理
 void CREATE_PROCESS::Process() {
@@ -17,7 +16,7 @@ void CREATE_PROCESS::Process() {
 }
 
 // 関数ポインタにセット
-void CREATE_PROCESS::SetFunc(void (*newFunc)(), int num) {
+void CREATE_PROCESS::SetFunc(CREATE_PROCESS_FUNC newFunc, int num) {
 	func[num] = newFunc;
 }
 
@@ -102,7 +101,7 @@ void CREATE_PROCESS::SetRandDir() {
 // このステージで使用するステージ生成処理の関数ポインタ配列に、ステージ生成処理の関数ポインタをセット
 void TEST_CREATE_PROCESS::SetStageFunc() {
 	createProcess.SetFunc(OneLoad, 0);
-	createProcess.SetFunc(OnrLoad_2Squares, 1);
+	createProcess.SetFunc(OneLoad, 1);
 	createProcess.SetFunc(Floor, 2);
 	createProcess.SetFunc(Floor, 3);
 	createProcess.SetFunc(Floor, 4);
@@ -111,24 +110,11 @@ void TEST_CREATE_PROCESS::SetStageFunc() {
 // ステージ初期化
 void TEST_CREATE_PROCESS::Initialize() {
 
-	// ステージ生成の位置と向きを取得
-	pos = createProcess.GetCreationPos();
-	dir = createProcess.GetCreationDir();
-
 	// ステージ開始時の床を生成
 	StartFloor();
 
 	// このステージで使用するステージ生成処理の関数ポインタ配列に、ステージ生成処理の関数ポインタをセット
 	SetStageFunc();
-
-#if 0
-	// 最初の階段を設置
-	++pos->y;
-	createProcess.ClampCreationPos();
-	stage.SetBlock(*pos, -2, createProcess.GetRandDir(true));
-	*pos = VAdd(*pos, *dir);
-	createProcess.ClampCreationPos();
-#endif // 0
 }
 
 // ステージ開始時の床を生成
@@ -147,8 +133,14 @@ void TEST_CREATE_PROCESS::StartFloor() {
 // 一本道を生成
 void TEST_CREATE_PROCESS::OneLoad() {
 	
-	int createCount = 0;
+	// ステージ生成の位置と向きを取得
+	VECTOR& pos = createProcess.GetCreationPos();
+	VECTOR& dir = createProcess.GetCreationDir();
+
 	bool thisRaised = false; // 今回のプロセスで一段上がる処理が乱数で行われたか
+	createCount = 0;
+	MATRIX matrix;
+	VECTOR vec1, vec2;
 
 	// ステージ生成処理が正常に行える準備が整うまで繰り返す
 	while (true)
@@ -158,7 +150,7 @@ void TEST_CREATE_PROCESS::OneLoad() {
 
 		// ステージの端までの距離を数える
 		while (true) {
-			if (stage.CheckPos(VAdd(*pos, VScale(*dir, static_cast<float>(createCount + 1))))) {
+			if (stage.CheckPos(VAdd(pos, VScale(dir, static_cast<float>(createCount + 1))))) {
 				++createCount;
 			}
 			else
@@ -181,14 +173,21 @@ void TEST_CREATE_PROCESS::OneLoad() {
 	// 生成するブロックの長さを決定
 	createCount = rand() % createCount + 1;
 
+	// 一本道に幅を持たせる処理で使う変数の値を設定
+	vec1 = dir;                            // ステージ生成の向きを代入
+	matrix = MGetRotY(DX_PI_F / 2.0f);      // 90度開店する行列
+	vec2 = VTransform(vec1, matrix);        // vec1を90度回転させた値を代入
+	vec2 = VScale(vec2, ONELOAD_MAX_WIDTH); // 一本道の幅でスケール
+
 	// 一段上がるか乱数で決定、乱数が外れても設置位置の下にブロックがあれば一段上がる
-	if ((rand() % RAISE_UP_RATE) || (!stage.CheckBlock(VAdd(*pos, VGet(0.0f, -1.0f, 0.0f))))) {
+	if ((rand() % RAISE_UP_RATE) || (!stage.CheckBlock(VAdd(pos, VGet(0.0f, -1.0f, 0.0f)), VAdd(VAdd(pos, vec2), VGet(0.0f, -1.0f, 0.0f))))) {
 
 		// 一段上げる処理
 		thisRaised = true;
-		++pos->y;
-		stage.SetBlock(*pos, -2, createProcess.GetRandDir(true));
-		*pos = VAdd(*pos, *dir);
+		++pos.y;
+		stage.SetBlock(pos, VAdd(pos, vec2), -2, createProcess.GetRandDir(true));
+		pos = VAdd(pos, dir);
+		createProcess.ClampCreationPos();
 		--createCount;
 	}
 
@@ -196,24 +195,21 @@ void TEST_CREATE_PROCESS::OneLoad() {
 	for (int i = 0; i < createCount; ++i) {
 
 		// 設置位置の下にブロックがあれば一段上がる
-		if (!stage.CheckBlock(VAdd(*pos, VGet(0.0f, -1.0f, 0.0f)))) {
+		if (!stage.CheckBlock(VAdd(pos, VGet(0.0f, -1.0f, 0.0f)), VAdd(VAdd(pos, vec2), VGet(0.0f, -1.0f, 0.0f)))) {
 
 			// 一段上げる処理
-			++pos->y;
-			stage.SetBlock(*pos, -2, createProcess.GetRandDir(!thisRaised));
-			*pos = VAdd(*pos, *dir);
+			++pos.y;
+			stage.SetBlock(pos, VAdd(pos, vec2), -2, createProcess.GetRandDir(!thisRaised));
+			pos = VAdd(pos, dir);
+			createProcess.ClampCreationPos();
 		}
 		else {
-			stage.SetBlock(*pos, 1, -1);
-			*pos = VAdd(*pos, *dir);
+			stage.SetBlock(pos, VAdd(pos, vec2), 1, -1);
+			pos = VAdd(pos, dir);
+			createProcess.ClampCreationPos();
 		}
 	}
 	createCount = 0;
-}
-
-// 道幅2マスの一本道を生成
-void TEST_CREATE_PROCESS::OnrLoad_2Squares() {
-
 }
 
 // 穴の開いた一本道を生成

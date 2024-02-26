@@ -15,9 +15,9 @@ BLOCK STAGE::blockPlacement[STAGE_WIDTH][STAGE_HEIGHT][STAGE_WIDTH];
 void STAGE::Process() {
 	
 	// ステージ生成位置がステージの限界高度に達していなければステージを生成
-	if (createProcess.GetCreationPos()->y < STAGE_HEIGHT) {
+	if (createProcess.GetCreationPos().y < STAGE_HEIGHT) {
 
-		while (player.GetPosition().y + STAGE_CREATE_HEIGHT_TO_PLAYER > createProcess.GetCreationPos()->y)
+		while (player.GetPosition().y + STAGE_CREATE_HEIGHT_TO_PLAYER > createProcess.GetCreationPos().y)
 		{
 			Create();
 		}
@@ -222,6 +222,39 @@ bool STAGE::CheckBlock(VECTOR pos) {
 		id = GetBlockPlacement(pos).GetId();
 
 	return id == 0; // 0 は空気ブロックのID
+}
+
+// 指定した座標にブロックが存在するか判定(範囲)
+bool STAGE::CheckBlock(VECTOR pos1, VECTOR pos2) {
+	VECTOR Pos;
+	VECTOR Pos1;
+	VECTOR Pos2;
+
+	// 渡された2つのVECTORの引数どちらが大きいかで分岐
+	if (VSize(pos1) <= VSize(pos2)) {
+		Pos1 = pos1;
+		Pos2 = pos2;
+	}
+	else {
+		Pos1 = pos2;
+		Pos2 = pos1;
+	}
+
+	for (int i = static_cast<int>(round(Pos1.x)); i <= static_cast<int>(round(Pos2.x)); ++i) {
+		for (int j = static_cast<int>(round(Pos1.y)); j <= static_cast<int>(round(Pos2.y)); ++j) {
+			for (int k = static_cast<int>(round(Pos1.z)); k <= static_cast<int>(round(Pos2.z)); ++k) {
+				Pos.x = static_cast<float>(i);
+				Pos.y = static_cast<float>(j);
+				Pos.z = static_cast<float>(k);
+
+				// 指定した座標がステージの範囲内か判定
+				if (!CheckBlock(Pos))
+					return false;
+			}
+		}
+	}
+
+	return true;
 }
 
 // コンストラクタ
