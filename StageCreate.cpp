@@ -148,7 +148,7 @@ void TEST_CREATE_PROCESS::OneLoad() {
 	matrix = MGetRotY(DX_PI_F / 2.0f);      // 90度回転する行列
 	vec2 = VTransform(vec1, matrix);        // vec1を90度回転させた値を代入
 	vec2 = VScale(vec2, ONELOAD_MAX_WIDTH); // 一本道の幅でスケール
-	stage.SetBlock(pos, VAdd(VAdd(pos, vec2), dir), 1, -1);
+	stage.SetBlock(pos, VAdd(pos, vec2), 1, -1);
 
 	// ステージ生成処理が正常に行える準備が整うまで繰り返す
 	while (true)
@@ -170,7 +170,7 @@ void TEST_CREATE_PROCESS::OneLoad() {
 			createCount = 0;
 			continue;
 		}
-		// 端までの距離が0ブロックより上なら抜ける
+		// 端までの距離が0ブロック以上なら抜ける
 		else if (createCount > 0)
 			break;
 	}
@@ -178,7 +178,7 @@ void TEST_CREATE_PROCESS::OneLoad() {
 	// 今回と前回のステージ生成向きの差を求める
 	dirDiff -= createProcess.GetRandDir(false);
 	
-	// ステージ生成の向きによって分岐
+	// ステージ生成の向きの差によって分岐
 	switch (dirDiff)
 	{
 	case 0:
