@@ -558,6 +558,8 @@ void PLAYER::Move(VECTOR moveVec) {
 	VECTOR cDir = createProcess.GetCreationDir();
 	DrawFormatString(0, 90, GetColor(255, 255, 255), "CREATION_POS XYZ: %.3f / %.3f / %.3f", cPos.x, cPos.y, cPos.z);
 	DrawFormatString(0, 105, GetColor(255, 255, 255), "CREATION_DIR XYZ: %.3f / %.3f / %.3f", cDir.x, cDir.y, cDir.z);
+	int rDir = createProcess.GetRandDir(false);
+	DrawFormatString(0, 135, GetColor(255, 255, 255), "RAND_DIR : %d", rDir);
 
 	// êVÇµÇ¢ç¿ïWÇï€ë∂Ç∑ÇÈ
 	position = nowPos;

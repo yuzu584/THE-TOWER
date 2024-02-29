@@ -16,6 +16,7 @@ private:
 	VECTOR creationPos = { 3.0f, 0.0f, 3.0f };                // ステージ生成処理を行う位置
 	VECTOR creationDir = { 1.0f, 0.0f, 0.0f };                // ステージ生成処理を行う向き
 	int randDir;                                              // ステージ生成処理を行う向きの番号
+	int randReverseDir;                                       // ステージ生成処理を行う向きの逆向きの番号
 	int oldDir = 0;                                           // 前回のステージ生成処理を行う向きの番号
 public:
 	void Process();                                           // ステージ生成処理

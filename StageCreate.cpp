@@ -26,10 +26,12 @@ int CREATE_PROCESS::GetRandDir(bool reverse) {
 	// 向きを反転した数値を取得するなら
 	// 向きを反転した数値に加工して返す
 	if (reverse) {
-		randDir += 2;
-		if (randDir >= 4) {
-			randDir -= 4;
+		randReverseDir = randDir;
+		randReverseDir += 2;
+		if (randReverseDir >= 4) {
+			randReverseDir -= 4;
 		}
+		return randReverseDir;
 	}
 
 	return randDir;
@@ -137,7 +139,6 @@ void TEST_CREATE_PROCESS::OneLoad() {
 	VECTOR& pos = createProcess.GetCreationPos();
 	VECTOR& dir = createProcess.GetCreationDir();
 
-	bool thisRaised = false; // 今回のプロセスで一段上がる処理が乱数で行われたか
 	createCount = 0;
 	MATRIX matrix;
 	VECTOR vec1, vec2;
@@ -181,11 +182,8 @@ void TEST_CREATE_PROCESS::OneLoad() {
 	// ステージ生成の向きの差によって分岐
 	switch (dirDiff)
 	{
-	case 0:
-		pos = VAdd(pos, VScale(dir, ONELOAD_MAX_WIDTH + 1));
-		break;
 	case -1:
-		pos = VAdd(pos, dir);
+		pos = VAdd(pos, VScale(dir, ONELOAD_MAX_WIDTH));
 		break;
 	case -3:
 		pos = VAdd(VAdd(pos, VScale(dir, ONELOAD_MAX_WIDTH + 1)), VGet(0.0f, 0.0f, static_cast<float>(ONELOAD_MAX_WIDTH - 1)));
@@ -198,7 +196,7 @@ void TEST_CREATE_PROCESS::OneLoad() {
 		pos = VAdd(VAdd(pos, VScale(dir, ONELOAD_MAX_WIDTH)), vec2);
 		break;
 	case 3:
-		pos = VAdd(pos, dir);
+		pos = VAdd(pos, VScale(dir, ONELOAD_MAX_WIDTH));
 		break;
 	default:
 		break;
@@ -221,7 +219,6 @@ void TEST_CREATE_PROCESS::OneLoad() {
 	if ((rand() % RAISE_UP_RATE) || (!stage.CheckBlock(VAdd(pos, VGet(0.0f, -1.0f, 0.0f)), VAdd(VAdd(pos, vec2), VGet(0.0f, -1.0f, 0.0f))))) {
 
 		// 一段上げる処理
-		thisRaised = true;
 		++pos.y;
 		stage.SetBlock(pos, VAdd(pos, vec2), -2, createProcess.GetRandDir(true));
 		pos = VAdd(pos, dir);
@@ -230,14 +227,14 @@ void TEST_CREATE_PROCESS::OneLoad() {
 	}
 
 	// ステージ生成
-	for (int i = 0; i < createCount - (ONELOAD_MAX_WIDTH + 1); ++i) {
+	for (int i = 0; i < createCount; ++i) {
 
 		// 設置位置の下にブロックがあれば一段上がる
 		if (!stage.CheckBlock(VAdd(pos, VGet(0.0f, -1.0f, 0.0f)), VAdd(VAdd(pos, vec2), VGet(0.0f, -1.0f, 0.0f)))) {
 
 			// 一段上げる処理
 			++pos.y;
-			stage.SetBlock(pos, VAdd(pos, vec2), -2, createProcess.GetRandDir(!thisRaised));
+			stage.SetBlock(pos, VAdd(pos, vec2), -2, createProcess.GetRandDir(true));
 			pos = VAdd(pos, dir);
 			createProcess.ClampCreationPos();
 		}
