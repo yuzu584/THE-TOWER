@@ -141,6 +141,14 @@ void TEST_CREATE_PROCESS::OneLoad() {
 	createCount = 0;
 	MATRIX matrix;
 	VECTOR vec1, vec2;
+	int dirDiff = createProcess.GetRandDir(false); // 前回のステージ生成向きとの差
+
+	// 踊り場を生成
+	vec1 = dir;                             // ステージ生成の向きを代入
+	matrix = MGetRotY(DX_PI_F / 2.0f);      // 90度回転する行列
+	vec2 = VTransform(vec1, matrix);        // vec1を90度回転させた値を代入
+	vec2 = VScale(vec2, ONELOAD_MAX_WIDTH); // 一本道の幅でスケール
+	stage.SetBlock(pos, VAdd(VAdd(pos, vec2), dir), 1, -1);
 
 	// ステージ生成処理が正常に行える準備が整うまで繰り返す
 	while (true)
@@ -167,6 +175,36 @@ void TEST_CREATE_PROCESS::OneLoad() {
 			break;
 	}
 
+	// 今回と前回のステージ生成向きの差を求める
+	dirDiff -= createProcess.GetRandDir(false);
+	
+	// ステージ生成の向きによって分岐
+	switch (dirDiff)
+	{
+	case 0:
+		pos = VAdd(pos, VScale(dir, ONELOAD_MAX_WIDTH + 1));
+		break;
+	case -1:
+		pos = VAdd(pos, dir);
+		break;
+	case -3:
+		pos = VAdd(VAdd(pos, VScale(dir, ONELOAD_MAX_WIDTH + 1)), VGet(0.0f, 0.0f, static_cast<float>(ONELOAD_MAX_WIDTH - 1)));
+		break;
+	case 1:
+		vec1 = dir;                             // ステージ生成の向きを代入
+		matrix = MGetRotY(DX_PI_F / -2.0f);     // -90度回転する行列
+		vec2 = VTransform(vec1, matrix);        // vec1を-90度回転させた値を代入
+		vec2 = VScale(vec2, ONELOAD_MAX_WIDTH); // 一本道の幅でスケール
+		pos = VAdd(VAdd(pos, VScale(dir, ONELOAD_MAX_WIDTH)), vec2);
+		break;
+	case 3:
+		pos = VAdd(pos, dir);
+		break;
+	default:
+		break;
+	}
+	createProcess.ClampCreationPos();
+
 	// 前回のブロック生成処理の向きを設定
 	createProcess.SetOldDir();
 
@@ -174,8 +212,8 @@ void TEST_CREATE_PROCESS::OneLoad() {
 	createCount = rand() % createCount + 1;
 
 	// 一本道に幅を持たせる処理で使う変数の値を設定
-	vec1 = dir;                            // ステージ生成の向きを代入
-	matrix = MGetRotY(DX_PI_F / 2.0f);      // 90度開店する行列
+	vec1 = dir;                             // ステージ生成の向きを代入
+	matrix = MGetRotY(DX_PI_F / 2.0f);      // 90度回転する行列
 	vec2 = VTransform(vec1, matrix);        // vec1を90度回転させた値を代入
 	vec2 = VScale(vec2, ONELOAD_MAX_WIDTH); // 一本道の幅でスケール
 
@@ -192,7 +230,7 @@ void TEST_CREATE_PROCESS::OneLoad() {
 	}
 
 	// ステージ生成
-	for (int i = 0; i < createCount; ++i) {
+	for (int i = 0; i < createCount - (ONELOAD_MAX_WIDTH + 1); ++i) {
 
 		// 設置位置の下にブロックがあれば一段上がる
 		if (!stage.CheckBlock(VAdd(pos, VGet(0.0f, -1.0f, 0.0f)), VAdd(VAdd(pos, vec2), VGet(0.0f, -1.0f, 0.0f)))) {

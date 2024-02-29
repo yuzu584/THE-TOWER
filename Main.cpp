@@ -54,7 +54,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		// カメラの処理
 		camera.Process();
 
-		// ステージを描画
+		// ステージの処理
 		stage.Process();
 
 		// プレイヤーの処理
