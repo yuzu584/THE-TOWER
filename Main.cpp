@@ -28,6 +28,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	SetBackgroundColor(128, 128, 128);
 
 	stage.Initialize(0);
+	stage.Create();
 
 	player.Initialize();
 

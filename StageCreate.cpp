@@ -4,6 +4,7 @@
 CREATE_PROCESS createProcess;
 TEST_CREATE_PROCESS test_create_process;
 int TEST_CREATE_PROCESS::createCount;
+int TEST_CREATE_PROCESS::dirDiff;
 
 // ステージ生成処理
 void CREATE_PROCESS::Process() {
@@ -26,11 +27,9 @@ int CREATE_PROCESS::GetRandDir(bool reverse) {
 	// 向きを反転した数値を取得するなら
 	// 向きを反転した数値に加工して返す
 	if (reverse) {
-		randReverseDir = randDir;
-		randReverseDir += 2;
-		if (randReverseDir >= 4) {
-			randReverseDir -= 4;
-		}
+		randReverseDir = randDir + 2;
+
+		randReverseDir %= 4;
 		return randReverseDir;
 	}
 
@@ -63,10 +62,8 @@ void CREATE_PROCESS::SetRandDir() {
 		randDir = rand() % 4;
 
 		// 前回の向きの反対の向きを求める
-		int reverseOldDir = (oldDir + 2);
-		if (reverseOldDir > 3) {
-			reverseOldDir -= 4;
-		}
+		int reverseOldDir = oldDir + 2;
+		reverseOldDir %= 4;
 
 		// 前回の向きの反対の向き又は前回と同じ向きならやり直し
 		if ((randDir == reverseOldDir) || (randDir == oldDir)) {
@@ -122,14 +119,18 @@ void TEST_CREATE_PROCESS::Initialize() {
 // ステージ開始時の床を生成
 void TEST_CREATE_PROCESS::StartFloor() {
 
-	VECTOR pos = { 0.0f, 0.0f, 0.0f };
-	for (int i = 0; i < STAGE_WIDTH; ++i) {
-		for (int j = 0; j < STAGE_WIDTH; ++j) {
-			pos.x = static_cast<float>(i);
-			pos.z = static_cast<float>(j);
-			stage.SetBlock(pos, 2, -1);
-		}
-	}
+	VECTOR pos1 = { 0.0f, 0.0f, 0.0f };
+	VECTOR pos2 = { STAGE_WIDTH - 1, 0.0f, STAGE_WIDTH - 1 };
+	stage.SetBlock(pos1, pos2, 2, -1);
+}
+
+// 一段上がる処理
+void TEST_CREATE_PROCESS::RaiseUp(VECTOR& pos, VECTOR& dir, VECTOR& vec2) {
+	++pos.y;
+	stage.SetBlock(pos, VAdd(pos, vec2), -2, createProcess.GetRandDir(true));
+	pos = VAdd(pos, dir);
+	createProcess.ClampCreationPos();
+	--createCount;
 }
 
 // 一本道を生成
@@ -142,18 +143,27 @@ void TEST_CREATE_PROCESS::OneLoad() {
 	createCount = 0;
 	MATRIX matrix;
 	VECTOR vec1, vec2;
-	int dirDiff = createProcess.GetRandDir(false); // 前回のステージ生成向きとの差
+	dirDiff = createProcess.GetRandDir(false); // 前回のステージ生成向きとの差
 
 	// 踊り場を生成
 	vec1 = dir;                             // ステージ生成の向きを代入
 	matrix = MGetRotY(DX_PI_F / 2.0f);      // 90度回転する行列
 	vec2 = VTransform(vec1, matrix);        // vec1を90度回転させた値を代入
 	vec2 = VScale(vec2, ONELOAD_MAX_WIDTH); // 一本道の幅でスケール
-	stage.SetBlock(pos, VAdd(pos, vec2), 1, -1);
+
+	// 設置位置の下にブロックがあれば一段上がる
+	if (!stage.CheckBlock(VAdd(pos, VGet(0.0f, -1.0f, 0.0f)), VAdd(VAdd(pos, vec2), VGet(0.0f, -1.0f, 0.0f)))) {
+		RaiseUp(pos, dir, vec2);
+	}
+	else {
+		stage.SetBlock(pos, VAdd(VAdd(pos, VScale(dir, ONELOAD_MAX_WIDTH)), vec2), -1, -1);
+	}
 
 	// ステージ生成処理が正常に行える準備が整うまで繰り返す
 	while (true)
 	{
+		createCount = 0;
+
 		// ステージ生成の向きをランダムに変更
 		createProcess.SetRandDir();
 
@@ -167,10 +177,9 @@ void TEST_CREATE_PROCESS::OneLoad() {
 		}
 
 		// 端までの距離が0ブロックならやり直し
-		if (createCount == 0) {
-			createCount = 0;
+		if (createCount == 0)
 			continue;
-		}
+
 		// 端までの距離が0ブロック以上なら抜ける
 		else if (createCount > 0)
 			break;
@@ -183,20 +192,24 @@ void TEST_CREATE_PROCESS::OneLoad() {
 	switch (dirDiff)
 	{
 	case -1:
-		pos = VAdd(pos, VScale(dir, ONELOAD_MAX_WIDTH));
-		break;
-	case -3:
-		pos = VAdd(VAdd(pos, VScale(dir, ONELOAD_MAX_WIDTH + 1)), VGet(0.0f, 0.0f, static_cast<float>(ONELOAD_MAX_WIDTH - 1)));
-		break;
-	case 1:
 		vec1 = dir;                             // ステージ生成の向きを代入
 		matrix = MGetRotY(DX_PI_F / -2.0f);     // -90度回転する行列
 		vec2 = VTransform(vec1, matrix);        // vec1を-90度回転させた値を代入
 		vec2 = VScale(vec2, ONELOAD_MAX_WIDTH); // 一本道の幅でスケール
-		pos = VAdd(VAdd(pos, VScale(dir, ONELOAD_MAX_WIDTH)), vec2);
+		pos = VAdd(VAdd(pos, VScale(dir, ONELOAD_MAX_WIDTH + 1)), vec2);
+		break;
+	case -3:
+		pos = VAdd(pos, VScale(dir, ONELOAD_MAX_WIDTH));
+		break;
+	case 1:
+		pos = VAdd(pos, dir);
 		break;
 	case 3:
-		pos = VAdd(pos, VScale(dir, ONELOAD_MAX_WIDTH));
+		vec1 = dir;                             // ステージ生成の向きを代入
+		matrix = MGetRotY(DX_PI_F / -2.0f);     // -90度回転する行列
+		vec2 = VTransform(vec1, matrix);        // vec1を-90度回転させた値を代入
+		vec2 = VScale(vec2, ONELOAD_MAX_WIDTH); // 一本道の幅でスケール
+		pos = VAdd(VAdd(pos, VScale(dir, ONELOAD_MAX_WIDTH + 1)), vec2);
 		break;
 	default:
 		break;
@@ -219,11 +232,7 @@ void TEST_CREATE_PROCESS::OneLoad() {
 	if ((rand() % RAISE_UP_RATE) || (!stage.CheckBlock(VAdd(pos, VGet(0.0f, -1.0f, 0.0f)), VAdd(VAdd(pos, vec2), VGet(0.0f, -1.0f, 0.0f))))) {
 
 		// 一段上げる処理
-		++pos.y;
-		stage.SetBlock(pos, VAdd(pos, vec2), -2, createProcess.GetRandDir(true));
-		pos = VAdd(pos, dir);
-		createProcess.ClampCreationPos();
-		--createCount;
+		RaiseUp(pos, dir, vec2);
 	}
 
 	// ステージ生成
@@ -233,18 +242,15 @@ void TEST_CREATE_PROCESS::OneLoad() {
 		if (!stage.CheckBlock(VAdd(pos, VGet(0.0f, -1.0f, 0.0f)), VAdd(VAdd(pos, vec2), VGet(0.0f, -1.0f, 0.0f)))) {
 
 			// 一段上げる処理
-			++pos.y;
-			stage.SetBlock(pos, VAdd(pos, vec2), -2, createProcess.GetRandDir(true));
-			pos = VAdd(pos, dir);
-			createProcess.ClampCreationPos();
+			RaiseUp(pos, dir, vec2);
 		}
 		else {
 			stage.SetBlock(pos, VAdd(pos, vec2), 1, -1);
 			pos = VAdd(pos, dir);
 			createProcess.ClampCreationPos();
+			--createCount;
 		}
 	}
-	createCount = 0;
 }
 
 // 穴の開いた一本道を生成

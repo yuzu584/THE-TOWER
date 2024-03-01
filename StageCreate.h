@@ -34,14 +34,17 @@ public:
 class TEST_CREATE_PROCESS {
 private:
 	static int createCount;                                   // 生成処理の際に生成したブロック数を数える変数
+	static int dirDiff;
 public:
 	void SetStageFunc();									  // ステージ生成処理の関数ポインタをセット
 	void Initialize();									      // ステージ初期化
 	void StartFloor();                                        // ステージ開始時の床を生成
+	static void RaiseUp(VECTOR& pos, VECTOR& dir, VECTOR& vec2); // 一段上がる処理
 	static void OneLoad();                                    // 一本道を生成
 	static void HolesOneLoad();                               // 穴の開いた一本道を生成
 	static void Floor();                                      // 正方形の床を生成
 	static void FloatingFloor();                              // 他の足場から切り離された独立した床を生成
+	int GetDirDiff() { return dirDiff; }                      // 前回のステージ生成向きとの差を取得
 };
 
 extern CREATE_PROCESS createProcess;

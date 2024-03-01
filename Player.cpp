@@ -554,12 +554,13 @@ void PLAYER::Move(VECTOR moveVec) {
 	DrawFormatString(0, 30, GetColor(255, 255, 255), "WASD      : PLAYER MOVE");
 	DrawFormatString(0, 45, GetColor(255, 255, 255), "SPACE KEY : PLAYER JUMP");
 	DrawFormatString(0, 60, GetColor(255, 255, 255), "ARROW KEY : CAMERA MOVE");
+	DrawFormatString(0, 75, GetColor(255, 255, 255), "Z     KEY : CREATE STAGE");
 	VECTOR cPos = createProcess.GetCreationPos();
 	VECTOR cDir = createProcess.GetCreationDir();
-	DrawFormatString(0, 90, GetColor(255, 255, 255), "CREATION_POS XYZ: %.3f / %.3f / %.3f", cPos.x, cPos.y, cPos.z);
-	DrawFormatString(0, 105, GetColor(255, 255, 255), "CREATION_DIR XYZ: %.3f / %.3f / %.3f", cDir.x, cDir.y, cDir.z);
-	int rDir = createProcess.GetRandDir(false);
-	DrawFormatString(0, 135, GetColor(255, 255, 255), "RAND_DIR : %d", rDir);
+	DrawFormatString(0, 105, GetColor(255, 255, 255), "CREATION_POS XYZ: %.3f / %.3f / %.3f", cPos.x, cPos.y, cPos.z);
+	DrawFormatString(0, 120, GetColor(255, 255, 255), "CREATION_DIR XYZ: %.3f / %.3f / %.3f", cDir.x, cDir.y, cDir.z);
+	int dDiff = test_create_process.GetDirDiff();
+	DrawFormatString(0, 150, GetColor(255, 255, 255), "DIR_DIFF : %d", dDiff);
 
 	// êVÇµÇ¢ç¿ïWÇï€ë∂Ç∑ÇÈ
 	position = nowPos;

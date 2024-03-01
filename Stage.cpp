@@ -1,6 +1,7 @@
 #include "Stage.h"
 #include "StageCreate.h"
 #include "Player.h"
+#include "Input.h"
 
 #include <fstream>
 
@@ -14,6 +15,7 @@ BLOCK STAGE::blockPlacement[STAGE_WIDTH][STAGE_HEIGHT][STAGE_WIDTH];
 // ステージの処理
 void STAGE::Process() {
 	
+	/*
 	// ステージ生成位置がステージの限界高度に達していなければステージを生成
 	if (createProcess.GetCreationPos().y < STAGE_HEIGHT) {
 
@@ -21,7 +23,10 @@ void STAGE::Process() {
 		{
 			Create();
 		}
-	}
+	}*/
+
+	if (input.GetEdgeInput() & PAD_INPUT_1)
+		Create();
 
 	// ステージの描画
 	Render();
@@ -218,7 +223,7 @@ bool STAGE::CheckBlock(VECTOR pos) {
 
 	// 指定の座標のブロックのモデルハンドルを取得して、空気ブロック以外なら存在する判定にする
 	int id = 0;
-	if(CheckPos(pos))
+	if (CheckPos(pos))
 		id = GetBlockPlacement(pos).GetId();
 
 	return id == 0; // 0 は空気ブロックのID
