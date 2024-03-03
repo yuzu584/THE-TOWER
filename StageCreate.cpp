@@ -145,15 +145,23 @@ void TEST_CREATE_PROCESS::OneLoad() {
 	VECTOR vec1, vec2;
 	dirDiff = createProcess.GetRandDir(false); // 前回のステージ生成向きとの差
 
-	// 踊り場を生成
+	VECTOR underPos; // ステージ生成位置のY座標より1低い座標
+
 	vec1 = dir;                             // ステージ生成の向きを代入
 	matrix = MGetRotY(DX_PI_F / 2.0f);      // 90度回転する行列
 	vec2 = VTransform(vec1, matrix);        // vec1を90度回転させた値を代入
 	vec2 = VScale(vec2, ONELOAD_MAX_WIDTH); // 一本道の幅でスケール
 
+	// ステージ生成位置のY座標より1低い座標を代入
+	underPos = VAdd(pos, VGet(0.0f, -1.0f, 0.0f));
+
+	// 踊り場を生成
 	// 設置位置の下にブロックがあれば一段上がる
-	if (!stage.CheckBlock(VAdd(pos, VGet(0.0f, -1.0f, 0.0f)), VAdd(VAdd(pos, vec2), VGet(0.0f, -1.0f, 0.0f)))) {
-		RaiseUp(pos, dir, vec2);
+	if (!stage.CheckBlock(underPos, VAdd(VAdd(underPos, VScale(dir, ONELOAD_MAX_WIDTH)), vec2))) {
+		++pos.y;
+		stage.SetBlock(pos, VAdd(pos, vec2), -2, createProcess.GetRandDir(true));
+		pos = VAdd(pos, dir);
+		createProcess.ClampCreationPos();
 	}
 	else {
 		stage.SetBlock(pos, VAdd(VAdd(pos, VScale(dir, ONELOAD_MAX_WIDTH)), vec2), -1, -1);
@@ -180,9 +188,11 @@ void TEST_CREATE_PROCESS::OneLoad() {
 		if (createCount == 0)
 			continue;
 
-		// 端までの距離が0ブロック以上なら抜ける
-		else if (createCount > 0)
+		// 端までの距離が一本道の幅の最大値以上なら抜ける
+		else if (createCount > (ONELOAD_MAX_WIDTH + 1) * 2) {
+			createCount -= (ONELOAD_MAX_WIDTH + 1);
 			break;
+		}
 	}
 
 	// 今回と前回のステージ生成向きの差を求める
@@ -228,8 +238,11 @@ void TEST_CREATE_PROCESS::OneLoad() {
 	vec2 = VTransform(vec1, matrix);        // vec1を90度回転させた値を代入
 	vec2 = VScale(vec2, ONELOAD_MAX_WIDTH); // 一本道の幅でスケール
 
+	// ステージ生成位置のY座標より1低い座標を代入
+	underPos = VAdd(pos, VGet(0.0f, -1.0f, 0.0f));
+
 	// 一段上がるか乱数で決定、乱数が外れても設置位置の下にブロックがあれば一段上がる
-	if ((rand() % RAISE_UP_RATE) || (!stage.CheckBlock(VAdd(pos, VGet(0.0f, -1.0f, 0.0f)), VAdd(VAdd(pos, vec2), VGet(0.0f, -1.0f, 0.0f))))) {
+	if ((rand() % RAISE_UP_RATE) || (!stage.CheckBlock(underPos, VAdd(underPos, vec2)))) {
 
 		// 一段上げる処理
 		RaiseUp(pos, dir, vec2);
@@ -238,8 +251,11 @@ void TEST_CREATE_PROCESS::OneLoad() {
 	// ステージ生成
 	for (int i = 0; i < createCount; ++i) {
 
+		// ステージ生成位置のY座標より1低い座標を代入
+		underPos = VAdd(pos, VGet(0.0f, -1.0f, 0.0f));
+
 		// 設置位置の下にブロックがあれば一段上がる
-		if (!stage.CheckBlock(VAdd(pos, VGet(0.0f, -1.0f, 0.0f)), VAdd(VAdd(pos, vec2), VGet(0.0f, -1.0f, 0.0f)))) {
+		if (!stage.CheckBlock(underPos, VAdd(underPos, vec2))) {
 
 			// 一段上げる処理
 			RaiseUp(pos, dir, vec2);

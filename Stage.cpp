@@ -15,7 +15,6 @@ BLOCK STAGE::blockPlacement[STAGE_WIDTH][STAGE_HEIGHT][STAGE_WIDTH];
 // ステージの処理
 void STAGE::Process() {
 	
-	/*
 	// ステージ生成位置がステージの限界高度に達していなければステージを生成
 	if (createProcess.GetCreationPos().y < STAGE_HEIGHT) {
 
@@ -23,7 +22,7 @@ void STAGE::Process() {
 		{
 			Create();
 		}
-	}*/
+	}
 
 	if (input.GetEdgeInput() & PAD_INPUT_1)
 		Create();
